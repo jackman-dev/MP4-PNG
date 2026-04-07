@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MP4-PNG</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="panel">
+          <h1>MP4-PNG</h1>
+          <p class="panel-copy">
+            MP4 위에 PNG 아이콘을 올리고, 드래그/정렬 후 영상으로 저장하세요.
+          </p>
+        </div>
+
+        <div class="panel">
+          <label class="field-label section-title" for="videoInput">MP4 동영상 선택</label>
+          <input id="videoInput" type="file" accept="video/mp4,video/*" />
+        </div>
+
+        <div class="panel">
+          <label class="field-label section-title" for="iconInput">PNG 아이콘 선택</label>
+          <input id="iconInput" type="file" accept="image/png" multiple />
+          <button id="addIconsButton" class="secondary-button" type="button">
+            아이콘 추가 업로드
+          </button>
+        </div>
+
+        <div class="panel">
+          <h2 class="section-title">Alignment</h2>
+          <div class="spacing-controls">
+            <label class="field-label" for="leftMarginInput">좌측 여백 (px)</label>
+            <input id="leftMarginInput" class="number-input" type="number" min="0" value="30" />
+            <label class="field-label" for="topMarginInput">상단 여백 (px)</label>
+            <input id="topMarginInput" class="number-input" type="number" min="0" value="30" />
+            <button id="applySpacingButton" type="button">여백 적용</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 class="section-title">출력해상도</h2>
+          <label class="field-label" for="resolutionSelect">다운로드 크기</label>
+          <select id="resolutionSelect" class="resolution-select">
+            <option value="1">원본 해상도</option>
+            <option value="1.5">1.5배 업스케일</option>
+            <option value="2">2배 업스케일</option>
+          </select>
+          <p id="resolutionHint" class="status-text">
+            업스케일은 출력 픽셀 수를 키우지만, 원본 영상보다 실제 디테일이 늘어나지는 않습니다.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h2 class="section-title">레이어</h2>
+          <div id="layerList" class="layer-list">
+            <p class="empty-state">PNG 아이콘을 업로드하면 여기서 크기를 조절할 수 있습니다.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <button id="exportButton" class="primary-button" type="button" disabled>
+            작업 영상 다운로드
+          </button>
+          <p id="exportStatus" class="status-text">
+            동영상과 아이콘을 준비하면 내보내기를 시작할 수 있습니다.
+          </p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="workspace-header">
+          <div>
+            <h2>작업 영역</h2>
+            <p id="videoMeta" class="workspace-copy">
+              MP4를 선택하면 원본 크기로 표시됩니다.
+            </p>
+          </div>
+        </div>
+
+        <div id="stageScroll" class="stage-scroll">
+          <div id="stage" class="stage">
+            <video
+              id="videoElement"
+              playsinline
+              crossorigin="anonymous"
+              controls
+            ></video>
+            <div id="overlayLayer" class="overlay-layer"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <template id="layerItemTemplate">
+      <div class="layer-item">
+        <div class="layer-head">
+          <span class="layer-name"></span>
+          <button class="small-button delete-button" type="button">삭제</button>
+        </div>
+        <label class="range-label">
+          크기 단계
+          <div class="size-step-labels" aria-hidden="true">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+          </div>
+          <input class="size-range" type="range" min="1" max="4" step="1" />
+        </label>
+        <p class="size-meta"></p>
+      </div>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
