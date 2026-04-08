@@ -17,17 +17,19 @@ const topMarginInput = document.getElementById("topMarginInput");
 const applySpacingButton = document.getElementById("applySpacingButton");
 
 const SIZE_PRESETS = [0.8, 1, 1.35, 1.7];
-const DEFAULT_SIZE_LEVEL = 2;
+const DEFAULT_SIZE_LEVEL = 4;
 const DEFAULT_VERTICAL_GAP = 20;
 const DEFAULT_MAX_ICON_SIZE = 96;
+const MAX_SAFE_EXPORT_PIXELS = 1920 * 1080;
+const EXPORT_FPS = 24;
 const state = {
   videoUrl: "",
   videoWidth: 640,
   videoHeight: 360,
   icons: [],
   selectedIconId: null,
-  leftMargin: 30,
-  topMargin: 30,
+  leftMargin: 50,
+  topMargin: 50,
 };
 
 let dragState = null;
@@ -63,7 +65,8 @@ function handleVideoUpload(event) {
     stage.style.width = `${state.videoWidth}px`;
     stage.style.height = `${state.videoHeight}px`;
     videoMeta.textContent = `${file.name} · ${state.videoWidth} x ${state.videoHeight}px`;
-    exportStatus.textContent = "아이콘 위치를 조정한 뒤 작업 영상을 다운로드할 수 있습니다.";
+    exportStatus.textContent =
+      "아이콘 위치를 조정한 뒤 작업 영상을 다운로드할 수 있습니다. 큰 영상은 자동으로 안전한 출력 크기로 조정될 수 있습니다.";
     updateResolutionHint();
     updateExportAvailability();
     stageScroll.scrollTo({ top: 0, left: 0, behavior: "smooth" });
@@ -341,16 +344,16 @@ async function exportComposition() {
   }
 
   exportButton.disabled = true;
-  exportStatus.textContent = "영상을 렌더링 중입니다. 영상 길이에 따라 시간이 걸릴 수 있습니다.";
+  exportStatus.textContent =
+    "영상을 렌더링 중입니다. 안정성을 위해 안전한 출력 크기를 자동 적용할 수 있습니다.";
 
   try {
-    const outputScale = Number(resolutionSelect.value);
-    const outputWidth = Math.round(state.videoWidth * outputScale);
-    const outputHeight = Math.round(state.videoHeight * outputScale);
+    const exportSettings = getSafeExportSettings(Number(resolutionSelect.value));
+    const { outputScale, outputWidth, outputHeight, capped } = exportSettings;
     const canvas = document.createElement("canvas");
     canvas.width = outputWidth;
     canvas.height = outputHeight;
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d", { alpha: false });
 
     if (!context) {
       throw new Error("canvas-init");
@@ -360,7 +363,7 @@ async function exportComposition() {
     context.imageSmoothingQuality = "high";
 
     const iconBitmaps = await loadIconBitmaps();
-    const stream = canvas.captureStream(30);
+    const stream = canvas.captureStream(EXPORT_FPS);
     const mimeType = getSupportedMimeType();
 
     if (!mimeType) {
@@ -368,7 +371,10 @@ async function exportComposition() {
     }
 
     const chunks = [];
-    const recorder = new MediaRecorder(stream, { mimeType });
+    const recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 6_000_000,
+    });
 
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -380,6 +386,7 @@ async function exportComposition() {
     exportVideo.src = state.videoUrl;
     exportVideo.muted = true;
     exportVideo.playsInline = true;
+    exportVideo.preload = "auto";
     exportVideo.crossOrigin = "anonymous";
 
     await waitForVideoReady(exportVideo);
@@ -389,11 +396,14 @@ async function exportComposition() {
       recorder.onstop = resolve;
     });
 
-    recorder.start(250);
+    recorder.start(1000);
     await exportVideo.play();
     await drawFrames(exportVideo, context, iconBitmaps, outputScale);
     recorder.stop();
     await finished;
+    exportVideo.pause();
+    exportVideo.removeAttribute("src");
+    exportVideo.load();
 
     const extension = mimeType.includes("mp4") ? "mp4" : "webm";
     const blob = new Blob(chunks, { type: mimeType });
@@ -402,19 +412,20 @@ async function exportComposition() {
     anchor.href = downloadUrl;
     anchor.download = `video-overlay-export.${extension}`;
     anchor.click();
-    URL.revokeObjectURL(downloadUrl);
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 
     exportStatus.textContent =
       extension === "mp4"
-        ? `MP4 다운로드가 시작되었습니다. (${outputWidth} x ${outputHeight})`
-        : `브라우저 지원 형식으로 다운로드를 시작했습니다. 현재 브라우저에서는 MP4 대신 WEBM으로 저장됩니다. (${outputWidth} x ${outputHeight})`;
+        ? `MP4 다운로드가 시작되었습니다. (${outputWidth} x ${outputHeight})${capped ? " · 안정성을 위해 출력 크기를 자동 조정했습니다." : ""}`
+        : `브라우저 지원 형식으로 다운로드를 시작했습니다. 현재 브라우저에서는 MP4 대신 WEBM으로 저장됩니다. (${outputWidth} x ${outputHeight})${capped ? " · 안정성을 위해 출력 크기를 자동 조정했습니다." : ""}`;
   } catch (error) {
     if (error instanceof Error && error.message === "unsupported-export") {
       exportStatus.textContent = "이 브라우저는 영상 내보내기를 지원하지 않습니다.";
     } else if (error instanceof Error && error.message === "canvas-init") {
       exportStatus.textContent = "캔버스 초기화에 실패했습니다.";
     } else {
-      exportStatus.textContent = "영상 렌더링 중 오류가 발생했습니다. 다른 브라우저에서 다시 시도해 주세요.";
+      exportStatus.textContent =
+        "영상 렌더링 중 오류가 발생했습니다. 더 작은 영상이나 원본 해상도로 다시 시도해 주세요.";
     }
   } finally {
     updateExportAvailability();
@@ -574,12 +585,45 @@ function loadImageDimensions(url) {
 }
 
 function updateResolutionHint() {
-  const scale = Number(resolutionSelect.value);
-  const outputWidth = Math.round(state.videoWidth * scale);
-  const outputHeight = Math.round(state.videoHeight * scale);
-  const scaleLabel = scale === 1 ? "원본" : `${scale}배`;
-  resolutionHint.textContent =
-    `${scaleLabel} 출력 예정: ${outputWidth} x ${outputHeight}px. 업스케일은 픽셀 크기를 키우는 기능입니다.`;
+  const requestedScale = Number(resolutionSelect.value);
+  const { outputScale, outputWidth, outputHeight, capped } = getSafeExportSettings(
+    requestedScale
+  );
+  const scaleLabel = requestedScale === 1 ? "원본" : `${requestedScale}배`;
+  const appliedLabel =
+    outputScale === 1 ? "원본" : `${outputScale.toFixed(2).replace(/\.00$/, "")}배`;
+  resolutionHint.textContent = capped
+    ? `${scaleLabel} 요청은 너무 커서 ${appliedLabel} (${outputWidth} x ${outputHeight}px)로 자동 조정됩니다.`
+    : `${scaleLabel} 출력 예정: ${outputWidth} x ${outputHeight}px. 업스케일은 픽셀 크기만 키웁니다.`;
+}
+
+function getSafeExportSettings(requestedScale) {
+  const safeRequestedScale =
+    Number.isFinite(requestedScale) && requestedScale > 0 ? requestedScale : 1;
+  const requestedWidth = Math.round(state.videoWidth * safeRequestedScale);
+  const requestedHeight = Math.round(state.videoHeight * safeRequestedScale);
+  const requestedPixels = requestedWidth * requestedHeight;
+
+  if (requestedPixels <= MAX_SAFE_EXPORT_PIXELS) {
+    return {
+      outputScale: safeRequestedScale,
+      outputWidth: requestedWidth,
+      outputHeight: requestedHeight,
+      capped: false,
+    };
+  }
+
+  const safeScale = Math.sqrt(
+    MAX_SAFE_EXPORT_PIXELS / Math.max(state.videoWidth * state.videoHeight, 1)
+  );
+  const outputScale = Math.max(Math.min(safeRequestedScale, safeScale), 0.5);
+
+  return {
+    outputScale,
+    outputWidth: Math.round(state.videoWidth * outputScale),
+    outputHeight: Math.round(state.videoHeight * outputScale),
+    capped: outputScale < safeRequestedScale,
+  };
 }
 
 function clamp(value, min, max) {
