@@ -144,6 +144,18 @@ button:disabled {
   color: var(--text);
 }
 
+.danger-button {
+  width: auto;
+  min-width: 132px;
+  background: #351414;
+  color: #ffb3b3;
+  border: 1px solid rgba(255, 120, 120, 0.22);
+}
+
+.danger-button:disabled {
+  opacity: 0.45;
+}
+
 .button-stack {
   display: flex;
   flex-direction: column;
@@ -163,6 +175,10 @@ button:disabled {
 }
 
 .workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 16px;
 }
 
@@ -212,6 +228,7 @@ button:disabled {
   border: 2px solid transparent;
   border-radius: 12px;
   background: transparent;
+  overflow: visible;
   user-select: none;
   touch-action: none;
   cursor: grab;
@@ -233,6 +250,35 @@ button:disabled {
   height: 100%;
   pointer-events: none;
   object-fit: contain;
+}
+
+.overlay-delete-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  border-radius: 999px;
+  background: rgba(53, 20, 20, 0.95);
+  color: #ffb3b3;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.overlay-item.selected .overlay-delete-button {
+  display: inline-flex;
+}
+
+.overlay-delete-button:hover {
+  background: rgba(110, 28, 28, 0.98);
 }
 
 .layer-list {
@@ -319,5 +365,14 @@ input[type="file"]::file-selector-button {
 
   .workspace {
     min-height: 60vh;
+  }
+
+  .workspace-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .danger-button {
+    width: 100%;
   }
 }
