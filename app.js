@@ -15,6 +15,7 @@ const resolutionHint = document.getElementById("resolutionHint");
 const leftMarginInput = document.getElementById("leftMarginInput");
 const topMarginInput = document.getElementById("topMarginInput");
 const applySpacingButton = document.getElementById("applySpacingButton");
+const deleteSelectedButton = document.getElementById("deleteSelectedButton");
 
 const SIZE_PRESETS = [0.8, 1, 1.35, 1.7];
 const DEFAULT_SIZE_LEVEL = 4;
@@ -40,10 +41,13 @@ addIconsButton.addEventListener("click", () => iconInput.click());
 exportButton.addEventListener("click", exportComposition);
 resolutionSelect.addEventListener("change", updateResolutionHint);
 applySpacingButton.addEventListener("click", applySpacingSettings);
+deleteSelectedButton.addEventListener("click", removeSelectedIcon);
+document.addEventListener("keydown", handleSelectedIconDeleteShortcut);
 
 renderIcons();
 renderLayerList();
 updateResolutionHint();
+updateSelectedDeleteButton();
 
 function handleVideoUpload(event) {
   const [file] = event.target.files ?? [];
@@ -129,8 +133,7 @@ function renderIcons() {
   overlayLayer.innerHTML = "";
 
   state.icons.forEach((icon) => {
-    const button = document.createElement("button");
-    button.type = "button";
+    const button = document.createElement("div");
     button.className = "overlay-item";
     if (icon.id === state.selectedIconId) {
       button.classList.add("selected");
@@ -146,6 +149,17 @@ function renderIcons() {
     image.alt = icon.name;
     button.appendChild(image);
 
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "overlay-delete-button";
+    removeButton.setAttribute("aria-label", `${icon.name} 삭제`);
+    removeButton.textContent = "x";
+    removeButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      removeIcon(icon.id);
+    });
+    button.appendChild(removeButton);
+
     button.addEventListener("pointerdown", startIconDrag);
     button.addEventListener("click", () => {
       state.selectedIconId = icon.id;
@@ -155,6 +169,8 @@ function renderIcons() {
 
     overlayLayer.appendChild(button);
   });
+
+  updateSelectedDeleteButton();
 }
 
 function renderLayerList() {
@@ -197,6 +213,8 @@ function renderLayerList() {
 
     layerList.appendChild(fragment);
   });
+
+  updateSelectedDeleteButton();
 }
 
 function resizeIcon(iconId, level) {
@@ -238,7 +256,50 @@ function removeIcon(iconId) {
   updateExportAvailability();
 }
 
+function removeSelectedIcon() {
+  if (!state.selectedIconId) {
+    return;
+  }
+
+  removeIcon(state.selectedIconId);
+}
+
+function handleSelectedIconDeleteShortcut(event) {
+  if (!state.selectedIconId) {
+    return;
+  }
+
+  const target = event.target;
+  const isTypingField =
+    target instanceof HTMLElement &&
+    (target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.tagName === "SELECT" ||
+      target.isContentEditable);
+
+  if (isTypingField) {
+    return;
+  }
+
+  if (event.key === "Delete" || event.key === "Backspace") {
+    event.preventDefault();
+    removeSelectedIcon();
+  }
+}
+
+function updateSelectedDeleteButton() {
+  const selectedIcon = state.icons.find((icon) => icon.id === state.selectedIconId);
+  deleteSelectedButton.disabled = !selectedIcon;
+  deleteSelectedButton.textContent = selectedIcon
+    ? `선택 아이콘 삭제 (${selectedIcon.name})`
+    : "선택 아이콘 삭제";
+}
+
 function startIconDrag(event) {
+  if (event.target instanceof HTMLElement && event.target.closest(".overlay-delete-button")) {
+    return;
+  }
+
   const iconId = event.currentTarget.dataset.iconId;
   const icon = state.icons.find((entry) => entry.id === iconId);
   if (!icon) {
