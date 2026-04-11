@@ -16,6 +16,13 @@ const leftMarginInput = document.getElementById("leftMarginInput");
 const topMarginInput = document.getElementById("topMarginInput");
 const applySpacingButton = document.getElementById("applySpacingButton");
 const deleteSelectedButton = document.getElementById("deleteSelectedButton");
+const tabButtons = document.querySelectorAll("[data-tab-target]");
+const toolScreens = document.querySelectorAll(".tool-screen");
+const excelInput = document.getElementById("excelInput");
+const excelDownloadButton = document.getElementById("excelDownloadButton");
+const excelStatus = document.getElementById("excelStatus");
+const excelMeta = document.getElementById("excelMeta");
+const excelPreview = document.getElementById("excelPreview");
 
 const SIZE_PRESETS = [0.8, 1, 1.35, 1.7];
 const DEFAULT_SIZE_LEVEL = 4;
@@ -32,6 +39,10 @@ const state = {
   leftMargin: 50,
   topMargin: 50,
 };
+const excelState = {
+  fileName: "",
+  data: null,
+};
 
 let dragState = null;
 
@@ -43,11 +54,17 @@ resolutionSelect.addEventListener("change", updateResolutionHint);
 applySpacingButton.addEventListener("click", applySpacingSettings);
 deleteSelectedButton.addEventListener("click", removeSelectedIcon);
 document.addEventListener("keydown", handleSelectedIconDeleteShortcut);
+tabButtons.forEach((button) => {
+  button.addEventListener("click", () => switchTab(button.dataset.tabTarget));
+});
+excelInput?.addEventListener("change", handleExcelUpload);
+excelDownloadButton?.addEventListener("click", downloadExcelJson);
 
 renderIcons();
 renderLayerList();
 updateResolutionHint();
 updateSelectedDeleteButton();
+updateExcelDownloadAvailability();
 
 function handleVideoUpload(event) {
   const [file] = event.target.files ?? [];
@@ -295,6 +312,16 @@ function updateSelectedDeleteButton() {
     : "선택 아이콘 삭제";
 }
 
+function switchTab(targetId) {
+  tabButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.tabTarget === targetId);
+  });
+
+  toolScreens.forEach((screen) => {
+    screen.classList.toggle("is-active", screen.id === targetId);
+  });
+}
+
 function startIconDrag(event) {
   if (event.target instanceof HTMLElement && event.target.closest(".overlay-delete-button")) {
     return;
@@ -379,6 +406,12 @@ function maintainVerticalSpacing(changedIconId) {
 
 function updateExportAvailability() {
   exportButton.disabled = !(state.videoUrl && state.icons.length);
+}
+
+function updateExcelDownloadAvailability() {
+  if (excelDownloadButton) {
+    excelDownloadButton.disabled = !excelState.data;
+  }
 }
 
 function applySpacingSettings() {
@@ -656,6 +689,64 @@ function updateResolutionHint() {
   resolutionHint.textContent = capped
     ? `${scaleLabel} 요청은 너무 커서 ${appliedLabel} (${outputWidth} x ${outputHeight}px)로 자동 조정됩니다.`
     : `${scaleLabel} 출력 예정: ${outputWidth} x ${outputHeight}px. 업스케일은 픽셀 크기만 키웁니다.`;
+}
+
+async function handleExcelUpload(event) {
+  const [file] = event.target.files ?? [];
+  if (!file) {
+    return;
+  }
+
+  if (!window.XLSX) {
+    excelStatus.textContent =
+      "엑셀 변환 라이브러리를 불러오지 못했습니다. 인터넷 연결 후 다시 시도해 주세요.";
+    return;
+  }
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = window.XLSX.read(buffer, { type: "array" });
+    const jsonBySheet = {};
+
+    workbook.SheetNames.forEach((sheetName) => {
+      const sheet = workbook.Sheets[sheetName];
+      jsonBySheet[sheetName] = window.XLSX.utils.sheet_to_json(sheet, {
+        defval: null,
+      });
+    });
+
+    excelState.fileName = file.name;
+    excelState.data = jsonBySheet;
+    excelMeta.textContent = `${file.name} · ${workbook.SheetNames.length}개 시트`;
+    excelPreview.textContent = JSON.stringify(jsonBySheet, null, 2).slice(0, 12000);
+    excelStatus.textContent = "엑셀 파일을 JSON으로 변환했습니다. 다운로드할 수 있습니다.";
+  } catch (error) {
+    excelState.fileName = "";
+    excelState.data = null;
+    excelMeta.textContent = "첫 번째 시트의 변환 결과 일부가 여기에 표시됩니다.";
+    excelPreview.textContent = "엑셀 파일 변환에 실패했습니다.";
+    excelStatus.textContent =
+      "엑셀 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 다시 확인해 주세요.";
+  } finally {
+    updateExcelDownloadAvailability();
+  }
+}
+
+function downloadExcelJson() {
+  if (!excelState.data) {
+    return;
+  }
+
+  const baseName = excelState.fileName.replace(/\.[^.]+$/, "") || "excel-data";
+  const blob = new Blob([JSON.stringify(excelState.data, null, 2)], {
+    type: "application/json",
+  });
+  const downloadUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = downloadUrl;
+  anchor.download = `${baseName}.json`;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
 
 function getSafeExportSettings(requestedScale) {

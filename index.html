@@ -7,7 +7,17 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <div class="top-tabs">
+      <button class="tab-button is-active" type="button" data-tab-target="videoTool">
+        MP4-PNG
+      </button>
+      <button class="tab-button" type="button" data-tab-target="excelTool">
+        Excel to JSON
+      </button>
+    </div>
+
+    <section id="videoTool" class="tool-screen is-active">
+      <div class="app-shell">
       <aside class="sidebar">
         <div class="panel">
           <h1>MP4-PNG</h1>
@@ -95,7 +105,50 @@
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </section>
+
+    <section id="excelTool" class="tool-screen">
+      <div class="app-shell excel-shell">
+        <aside class="sidebar">
+          <div class="panel">
+            <h1>Excel to JSON</h1>
+            <p class="panel-copy">
+              엑셀 파일을 올리면 시트별 JSON으로 변환해서 바로 다운로드할 수 있습니다.
+            </p>
+          </div>
+
+          <div class="panel">
+            <label class="field-label section-title" for="excelInput">엑셀 파일 선택</label>
+            <input id="excelInput" type="file" accept=".xlsx,.xls,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" />
+          </div>
+
+          <div class="panel">
+            <button id="excelDownloadButton" class="primary-button" type="button" disabled>
+              JSON 다운로드
+            </button>
+            <p id="excelStatus" class="status-text">
+              파일을 업로드하면 JSON 미리보기와 다운로드 버튼이 활성화됩니다.
+            </p>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div>
+              <h2>JSON 미리보기</h2>
+              <p id="excelMeta" class="workspace-copy">
+                첫 번째 시트의 변환 결과 일부가 여기에 표시됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="json-preview-wrap">
+            <pre id="excelPreview" class="json-preview">아직 업로드된 엑셀 파일이 없습니다.</pre>
+          </div>
+        </main>
+      </div>
+    </section>
 
     <template id="layerItemTemplate">
       <div class="layer-item">
@@ -117,6 +170,7 @@
       </div>
     </template>
 
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script type="module" src="./app.js"></script>
   </body>
 </html>
