@@ -14,6 +14,9 @@
       <button class="tab-button" type="button" data-tab-target="excelTool">
         Excel to JSON
       </button>
+      <button class="tab-button" type="button" data-tab-target="hotspotTool">
+        Hotspot Editor
+      </button>
     </div>
 
     <section id="videoTool" class="tool-screen is-active">
@@ -150,6 +153,143 @@
       </div>
     </section>
 
+    <section id="hotspotTool" class="tool-screen">
+      <div class="app-shell hotspot-shell">
+        <aside class="sidebar">
+          <div class="panel">
+            <h1>Hotspot Editor</h1>
+            <p class="panel-copy">
+              기획전 배경 이미지 위에 상품 핫스팟을 찍고, hover 이미지와 함께 HTML/CSS/JS 소스를 다운로드하세요.
+            </p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2 class="section-title">섹션</h2>
+              <div class="button-row">
+                <button id="addHotspotSectionButton" class="secondary-button" type="button">
+                  섹션 추가
+                </button>
+                <button id="deleteHotspotSectionButton" class="danger-button" type="button">
+                  섹션 삭제
+                </button>
+              </div>
+            </div>
+            <div id="hotspotSectionList" class="section-list"></div>
+          </div>
+
+          <div class="panel">
+            <label class="field-label section-title" for="hotspotBackgroundInput">데스크톱 배경 이미지</label>
+            <input id="hotspotBackgroundInput" type="file" accept="image/png,image/jpeg,image/webp" />
+            <label class="field-label section-title" for="hotspotMobileBackgroundInput">모바일 배경 이미지</label>
+            <input id="hotspotMobileBackgroundInput" type="file" accept="image/png,image/jpeg,image/webp" />
+            <button id="addHotspotButton" class="secondary-button" type="button" disabled>
+              핫스팟 추가
+            </button>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">선택된 핫스팟</h2>
+            <label class="field-label" for="hotspotLabelInput">라벨</label>
+            <input id="hotspotLabelInput" class="number-input text-input" type="text" placeholder="예: 티셔츠" />
+            <label class="field-label" for="hotspotProductNameInput">상품명</label>
+            <input id="hotspotProductNameInput" class="number-input text-input" type="text" placeholder="상품명" />
+            <label class="field-label" for="hotspotDiscountInput">할인율</label>
+            <input id="hotspotDiscountInput" class="number-input text-input" type="text" placeholder="예: 35%" />
+            <label class="field-label" for="hotspotPriceInput">가격</label>
+            <input id="hotspotPriceInput" class="number-input text-input" type="text" placeholder="예: 96,850" />
+            <label class="field-label" for="hotspotLinkInput">링크 주소</label>
+            <input id="hotspotLinkInput" class="number-input text-input" type="text" placeholder="https://example.com/product" />
+            <label class="field-label" for="hotspotMobileLinkInput">모바일 링크 주소</label>
+            <input id="hotspotMobileLinkInput" class="number-input text-input" type="text" placeholder="모바일 전용 링크가 있으면 입력" />
+            <label class="field-label" for="hotspotBorderColorInput">원 테두리색</label>
+            <input id="hotspotBorderColorInput" class="color-input" type="color" value="#ffffff" />
+            <label class="field-label" for="hotspotBackgroundColorInput">원 배경색</label>
+            <input id="hotspotBackgroundColorInput" class="color-input" type="color" value="#ffffff" />
+            <label class="field-label" for="hotspotPlusColorInput">+ 색상</label>
+            <input id="hotspotPlusColorInput" class="color-input" type="color" value="#000000" />
+            <label class="field-label" for="hotspotDesktopTooltipPositionInput">PC 이미지 위치</label>
+            <select id="hotspotDesktopTooltipPositionInput" class="resolution-select">
+              <option value="right">우</option>
+              <option value="left">좌</option>
+              <option value="top">상</option>
+              <option value="bottom">하</option>
+            </select>
+            <label class="field-label" for="hotspotMobileTooltipPositionInput">Mobile 이미지 위치</label>
+            <select id="hotspotMobileTooltipPositionInput" class="resolution-select">
+              <option value="right">우</option>
+              <option value="left">좌</option>
+              <option value="top">상</option>
+              <option value="bottom">하</option>
+            </select>
+            <label class="field-label" for="hotspotPreviewInput">Hover 이미지</label>
+            <input id="hotspotPreviewInput" type="file" accept="image/png,image/jpeg,image/webp" />
+            <button id="deleteHotspotButton" class="danger-button" type="button" disabled>
+              선택 핫스팟 삭제
+            </button>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">소스 다운로드</h2>
+            <div class="download-group">
+              <p class="download-label">PC 소스</p>
+              <div class="button-stack">
+                <button id="downloadHotspotDesktopHtmlButton" type="button" disabled>pc-index.html</button>
+                <button id="downloadHotspotDesktopCssButton" type="button" disabled>pc-style.css</button>
+                <button id="downloadHotspotDesktopJsButton" type="button" disabled>pc-script.js</button>
+              </div>
+            </div>
+            <div class="download-group">
+              <p class="download-label">모바일 소스</p>
+              <div class="button-stack">
+                <button id="downloadHotspotMobileHtmlButton" type="button" disabled>mobile-index.html</button>
+                <button id="downloadHotspotMobileCssButton" type="button" disabled>mobile-style.css</button>
+                <button id="downloadHotspotMobileJsButton" type="button" disabled>mobile-script.js</button>
+              </div>
+            </div>
+            <button id="downloadHotspotZipButton" class="primary-button" type="button" disabled>
+              ZIP 다운로드
+            </button>
+            <p id="hotspotStatus" class="status-text">
+              배경과 핫스팟을 준비하면 기획전용 소스를 다운로드할 수 있습니다.
+            </p>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div>
+              <h2>기획전 작업 영역</h2>
+              <p id="hotspotMeta" class="workspace-copy">
+                좌측 PC, 우측 모바일 화면에서 각각 핫스팟 좌표를 따로 조정하세요.
+              </p>
+            </div>
+          </div>
+
+          <div class="hotspot-editor-grid">
+            <div class="hotspot-editor-panel">
+              <h3 class="editor-title">PC</h3>
+              <div id="hotspotDesktopStageScroll" class="stage-scroll">
+                <div id="hotspotDesktopStage" class="hotspot-stage">
+                  <img id="hotspotDesktopBackgroundImage" class="hotspot-background" alt="" />
+                  <div id="hotspotDesktopLayer" class="hotspot-layer"></div>
+                </div>
+              </div>
+            </div>
+            <div class="hotspot-editor-panel">
+              <h3 class="editor-title">Mobile</h3>
+              <div id="hotspotMobileStageScroll" class="stage-scroll">
+                <div id="hotspotMobileStage" class="hotspot-stage hotspot-stage-mobile">
+                  <img id="hotspotMobileBackgroundImage" class="hotspot-background" alt="" />
+                  <div id="hotspotMobileLayer" class="hotspot-layer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
     <template id="layerItemTemplate">
       <div class="layer-item">
         <div class="layer-head">
@@ -171,6 +311,7 @@
     </template>
 
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script type="module" src="./app.js"></script>
   </body>
 </html>
