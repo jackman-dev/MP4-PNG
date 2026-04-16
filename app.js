@@ -1217,10 +1217,12 @@ function syncHotspotStages() {
   hotspotMobileBackgroundImage.src =
     section.mobileBackgroundDataUrl || section.desktopBackgroundDataUrl || "";
 
+  /*
   hotspotMeta.textContent =
     `${section.name} · PC 미리보기 ${section.desktopDisplayWidth} x ${section.desktopDisplayHeight}px ` +
     `(실제 ${section.desktopWidth} x ${section.desktopHeight}px) · ` +
     `Mobile ${section.mobileWidth} x ${section.mobileHeight}px`;
+    */
 }
 
 function buildTooltipCard(item, previewSrc, mode = "desktop") {

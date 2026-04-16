@@ -189,9 +189,8 @@ button:disabled {
 .danger-button {
   width: auto;
   min-width: 132px;
-  background: #351414;
-  color: #ffb3b3;
-  border: 1px solid rgba(255, 120, 120, 0.22);
+  background: #fe0707;
+  color: #ffffff;
 }
 
 .danger-button:disabled {
@@ -288,6 +287,7 @@ button:disabled {
 .section-list {
   display: grid;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .section-item {
@@ -355,7 +355,6 @@ button:disabled {
 
 #hotspotMobileStageScroll {
   width: min(100%, 360px);
-  margin: 0 auto;
 }
 
 .hotspot-stage-mobile .hotspot-tooltip {
