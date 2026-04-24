@@ -14,8 +14,14 @@
       <button class="tab-button" type="button" data-tab-target="excelTool">
         Excel to JSON
       </button>
+      <button class="tab-button" type="button" data-tab-target="csvMergeTool">
+        CSV Merge
+      </button>
       <button class="tab-button" type="button" data-tab-target="hotspotTool">
         Hotspot Editor
+      </button>
+      <button class="tab-button" type="button" data-tab-target="sliderTool">
+        Slider Builder
       </button>
     </div>
 
@@ -153,6 +159,52 @@
       </div>
     </section>
 
+    <section id="csvMergeTool" class="tool-screen">
+      <div class="app-shell excel-shell">
+        <aside class="sidebar">
+          <div class="panel">
+            <h1>CSV Merge</h1>
+            <p class="panel-copy">
+              여러 CSV 파일을 업로드하면 데이터를 하나의 CSV로 합쳐서 다운로드할 수 있습니다.
+            </p>
+          </div>
+
+          <div class="panel">
+            <label class="field-label section-title" for="csvMergeInput">CSV 파일 선택</label>
+            <input id="csvMergeInput" type="file" accept=".csv,text/csv" multiple />
+            <label class="checkbox-label">
+              <input id="csvHeaderInput" type="checkbox" checked />
+              첫 번째 행을 헤더로 사용
+            </label>
+          </div>
+
+          <div class="panel">
+            <button id="csvDownloadButton" class="primary-button" type="button" disabled>
+              합친 CSV 다운로드
+            </button>
+            <p id="csvStatus" class="status-text">
+              CSV 파일을 여러 개 업로드하면 합쳐진 데이터 미리보기가 표시됩니다.
+            </p>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div>
+              <h2>CSV 미리보기</h2>
+              <p id="csvMeta" class="workspace-copy">
+                합쳐진 CSV 데이터 일부가 여기에 표시됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="json-preview-wrap">
+            <pre id="csvPreview" class="json-preview">아직 업로드된 CSV 파일이 없습니다.</pre>
+          </div>
+        </main>
+      </div>
+    </section>
+
     <section id="hotspotTool" class="tool-screen">
       <div class="app-shell hotspot-shell">
         <aside class="sidebar">
@@ -283,6 +335,182 @@
                   <img id="hotspotMobileBackgroundImage" class="hotspot-background" alt="" />
                   <div id="hotspotMobileLayer" class="hotspot-layer"></div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section id="sliderTool" class="tool-screen">
+      <div class="app-shell slider-shell">
+        <aside class="sidebar">
+          <div class="panel">
+            <h1>Slider Builder</h1>
+            <p class="panel-copy">
+              이미지를 올리고 옵션을 선택하면 슬라이더 미리보기와 복사용 HTML/CSS/JS 소스를 생성합니다.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">Slider List</h2>
+            <div id="sliderList" class="slider-list"></div>
+            <div class="button-stack">
+              <button id="addSliderButton" type="button">슬라이더 추가</button>
+              <button id="deleteSliderButton" class="danger-button" type="button">선택 슬라이더 삭제</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <label class="field-label section-title" for="sliderImageInput">슬라이드 이미지 선택</label>
+            <input id="sliderImageInput" type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <button id="clearSliderImagesButton" class="danger-button" type="button" disabled>
+              이미지 전체 삭제
+            </button>
+            <p id="sliderStatus" class="status-text">
+              이미지를 업로드하면 슬라이더 미리보기와 코드가 생성됩니다.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">Slider Options</h2>
+            <label class="field-label" for="sliderNameInput">클래스 이름</label>
+            <input id="sliderNameInput" class="number-input text-input" type="text" value="promo-slider" />
+            <label class="field-label" for="sliderSwiperPresetInput">Swiper 데모 프리셋</label>
+            <select id="sliderSwiperPresetInput" class="resolution-select">
+              <option value="basic">기본</option>
+              <option value="navigation">Navigation</option>
+              <option value="pagination">Pagination</option>
+              <option value="dynamic-pagination">Dynamic Pagination</option>
+              <option value="scrollbar">Scrollbar</option>
+              <option value="autoplay">Autoplay</option>
+              <option value="loop">Loop</option>
+              <option value="continuous">Continuous Loop</option>
+              <option value="vertical">Vertical</option>
+              <option value="free-mode">Free Mode</option>
+              <option value="centered">Centered Slides</option>
+              <option value="multi-view">Slides Per View</option>
+              <option value="auto-height">Auto Height</option>
+              <option value="fade">Fade Effect</option>
+              <option value="cube">Cube Effect</option>
+              <option value="coverflow">Coverflow Effect</option>
+              <option value="flip">Flip Effect</option>
+              <option value="cards">Cards Effect</option>
+              <option value="thumbs">Thumbs Gallery</option>
+            </select>
+            <div class="slider-option-grid">
+              <label class="field-label" for="sliderSlidesPerViewInput">
+                Slides Per View
+                <select id="sliderSlidesPerViewInput" class="resolution-select">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="auto">auto</option>
+                </select>
+              </label>
+              <label class="field-label" for="sliderSpaceBetweenInput">
+                Space Between
+                <input id="sliderSpaceBetweenInput" class="number-input" type="number" min="0" max="120" step="1" />
+              </label>
+              <label class="field-label" for="sliderSpeedInput">
+                Speed
+                <input id="sliderSpeedInput" class="number-input" type="number" min="100" max="10000" step="100" />
+              </label>
+              <label class="field-label" for="sliderIntervalInput">
+                Autoplay Delay
+                <input id="sliderIntervalInput" class="number-input" type="number" min="0" max="20000" step="100" />
+              </label>
+              <label class="field-label" for="sliderDirectionInput">
+                Direction
+                <select id="sliderDirectionInput" class="resolution-select">
+                  <option value="horizontal">horizontal</option>
+                  <option value="vertical">vertical</option>
+                </select>
+              </label>
+              <label class="field-label" for="sliderPaginationInput">
+                Pagination
+                <select id="sliderPaginationInput" class="resolution-select">
+                  <option value="none">none</option>
+                  <option value="dots">bullets</option>
+                  <option value="dynamic">dynamic bullets</option>
+                  <option value="counter">fraction</option>
+                  <option value="progress">progressbar</option>
+                  <option value="scrollbar">scrollbar</option>
+                  <option value="thumbnails">thumbnails</option>
+                </select>
+              </label>
+            </div>
+            <div class="slider-toggle-grid">
+              <label class="toggle-field">
+                <input id="sliderAutoplayOptionInput" type="checkbox" />
+                자동재생
+              </label>
+              <label class="toggle-field">
+                <input id="sliderLoopOptionInput" type="checkbox" />
+                무한반복
+              </label>
+              <label class="toggle-field">
+                <input id="sliderArrowsOptionInput" type="checkbox" />
+                좌우화살표
+              </label>
+              <label class="toggle-field">
+                <input id="sliderCenteredOptionInput" type="checkbox" />
+                가운데 정렬
+              </label>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2 class="section-title">소스 복사</h2>
+            <div class="button-stack">
+              <button id="copySliderHtmlButton" type="button" disabled>HTML 복사</button>
+              <button id="copySliderCssButton" type="button" disabled>CSS 복사</button>
+              <button id="copySliderJsButton" type="button" disabled>JS 복사</button>
+              <button id="copySliderAllButton" class="primary-button" type="button" disabled>
+                전체 소스 복사
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div>
+              <h2>슬라이더 미리보기</h2>
+              <p id="sliderMeta" class="workspace-copy">
+                업로드한 이미지 순서대로 슬라이더가 구성됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="slider-builder-grid">
+            <div class="slider-preview-card">
+              <div id="sliderPreview" class="slider-preview-empty">
+                슬라이드 이미지를 업로드해 주세요.
+              </div>
+            </div>
+            <div class="slider-code-grid">
+              <div class="code-panel">
+                <div class="code-head">
+                  <h3>HTML</h3>
+                  <button id="copySliderHtmlInlineButton" class="small-button" type="button" disabled>복사</button>
+                </div>
+                <pre id="sliderHtmlCode" class="code-preview"></pre>
+              </div>
+              <div class="code-panel">
+                <div class="code-head">
+                  <h3>CSS</h3>
+                  <button id="copySliderCssInlineButton" class="small-button" type="button" disabled>복사</button>
+                </div>
+                <pre id="sliderCssCode" class="code-preview"></pre>
+              </div>
+              <div class="code-panel">
+                <div class="code-head">
+                  <h3>JS</h3>
+                  <button id="copySliderJsInlineButton" class="small-button" type="button" disabled>복사</button>
+                </div>
+                <pre id="sliderJsCode" class="code-preview"></pre>
               </div>
             </div>
           </div>

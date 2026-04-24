@@ -23,6 +23,12 @@ const excelDownloadButton = document.getElementById("excelDownloadButton");
 const excelStatus = document.getElementById("excelStatus");
 const excelMeta = document.getElementById("excelMeta");
 const excelPreview = document.getElementById("excelPreview");
+const csvMergeInput = document.getElementById("csvMergeInput");
+const csvHeaderInput = document.getElementById("csvHeaderInput");
+const csvDownloadButton = document.getElementById("csvDownloadButton");
+const csvStatus = document.getElementById("csvStatus");
+const csvMeta = document.getElementById("csvMeta");
+const csvPreview = document.getElementById("csvPreview");
 const hotspotBackgroundInput = document.getElementById("hotspotBackgroundInput");
 const hotspotMobileBackgroundInput = document.getElementById("hotspotMobileBackgroundInput");
 const addHotspotSectionButton = document.getElementById("addHotspotSectionButton");
@@ -73,6 +79,36 @@ const downloadHotspotMobileJsButton = document.getElementById(
   "downloadHotspotMobileJsButton"
 );
 const downloadHotspotZipButton = document.getElementById("downloadHotspotZipButton");
+const sliderList = document.getElementById("sliderList");
+const addSliderButton = document.getElementById("addSliderButton");
+const deleteSliderButton = document.getElementById("deleteSliderButton");
+const sliderImageInput = document.getElementById("sliderImageInput");
+const clearSliderImagesButton = document.getElementById("clearSliderImagesButton");
+const sliderNameInput = document.getElementById("sliderNameInput");
+const sliderSwiperPresetInput = document.getElementById("sliderSwiperPresetInput");
+const sliderSlidesPerViewInput = document.getElementById("sliderSlidesPerViewInput");
+const sliderSpaceBetweenInput = document.getElementById("sliderSpaceBetweenInput");
+const sliderSpeedInput = document.getElementById("sliderSpeedInput");
+const sliderIntervalInput = document.getElementById("sliderIntervalInput");
+const sliderDirectionInput = document.getElementById("sliderDirectionInput");
+const sliderPaginationInput = document.getElementById("sliderPaginationInput");
+const sliderAutoplayOptionInput = document.getElementById("sliderAutoplayOptionInput");
+const sliderLoopOptionInput = document.getElementById("sliderLoopOptionInput");
+const sliderArrowsOptionInput = document.getElementById("sliderArrowsOptionInput");
+const sliderCenteredOptionInput = document.getElementById("sliderCenteredOptionInput");
+const sliderPreview = document.getElementById("sliderPreview");
+const sliderStatus = document.getElementById("sliderStatus");
+const sliderMeta = document.getElementById("sliderMeta");
+const sliderHtmlCode = document.getElementById("sliderHtmlCode");
+const sliderCssCode = document.getElementById("sliderCssCode");
+const sliderJsCode = document.getElementById("sliderJsCode");
+const copySliderHtmlButton = document.getElementById("copySliderHtmlButton");
+const copySliderCssButton = document.getElementById("copySliderCssButton");
+const copySliderJsButton = document.getElementById("copySliderJsButton");
+const copySliderAllButton = document.getElementById("copySliderAllButton");
+const copySliderHtmlInlineButton = document.getElementById("copySliderHtmlInlineButton");
+const copySliderCssInlineButton = document.getElementById("copySliderCssInlineButton");
+const copySliderJsInlineButton = document.getElementById("copySliderJsInlineButton");
 
 const SIZE_PRESETS = [0.8, 1, 1.35, 1.7];
 const DEFAULT_SIZE_LEVEL = 4;
@@ -95,10 +131,48 @@ const excelState = {
   fileName: "",
   data: null,
 };
+const csvState = {
+  fileNames: [],
+  csvText: "",
+  rowCount: 0,
+  columnCount: 0,
+};
 const hotspotState = {
   sections: [],
   selectedSectionId: null,
 };
+const sliderState = {
+  sliders: [createSliderItem(1)],
+  selectedSliderId: null,
+  timerId: null,
+  generated: {
+    html: "",
+    css: "",
+    js: "",
+  },
+  previewSwiper: null,
+  isLoadingSliderControls: false,
+  get activeSlider() {
+    return this.sliders.find((slider) => slider.id === this.selectedSliderId) || this.sliders[0];
+  },
+  get images() {
+    return this.activeSlider?.images ?? [];
+  },
+  set images(value) {
+    if (this.activeSlider) {
+      this.activeSlider.images = value;
+    }
+  },
+  get currentIndex() {
+    return this.activeSlider?.currentIndex ?? 0;
+  },
+  set currentIndex(value) {
+    if (this.activeSlider) {
+      this.activeSlider.currentIndex = value;
+    }
+  },
+};
+sliderState.selectedSliderId = sliderState.sliders[0].id;
 
 let dragState = null;
 let hotspotDragState = null;
@@ -116,6 +190,9 @@ tabButtons.forEach((button) => {
 });
 excelInput?.addEventListener("change", handleExcelUpload);
 excelDownloadButton?.addEventListener("click", downloadExcelJson);
+csvMergeInput?.addEventListener("change", handleCsvMergeUpload);
+csvHeaderInput?.addEventListener("change", handleCsvMergeUpload);
+csvDownloadButton?.addEventListener("click", downloadMergedCsv);
 hotspotBackgroundInput?.addEventListener("change", handleHotspotBackgroundUpload);
 hotspotMobileBackgroundInput?.addEventListener("change", handleHotspotMobileBackgroundUpload);
 addHotspotSectionButton?.addEventListener("click", addHotspotSection);
@@ -154,16 +231,49 @@ downloadHotspotMobileJsButton?.addEventListener("click", () =>
   downloadHotspotAsset("mobile", "js")
 );
 downloadHotspotZipButton?.addEventListener("click", downloadHotspotZip);
+sliderList?.addEventListener("click", handleSliderListClick);
+addSliderButton?.addEventListener("click", addSliderItem);
+deleteSliderButton?.addEventListener("click", deleteSelectedSliderItem);
+sliderImageInput?.addEventListener("change", handleSliderImageUpload);
+clearSliderImagesButton?.addEventListener("click", clearSliderImages);
+sliderNameInput?.addEventListener("input", updateSliderBuilder);
+sliderSwiperPresetInput?.addEventListener("change", handleSliderPresetChange);
+[
+  sliderSlidesPerViewInput,
+  sliderSpaceBetweenInput,
+  sliderSpeedInput,
+  sliderIntervalInput,
+  sliderDirectionInput,
+  sliderPaginationInput,
+  sliderAutoplayOptionInput,
+  sliderLoopOptionInput,
+  sliderArrowsOptionInput,
+  sliderCenteredOptionInput,
+].forEach((input) => {
+  input?.addEventListener("input", updateSliderBuilder);
+  input?.addEventListener("change", updateSliderBuilder);
+});
+sliderPreview?.addEventListener("click", handleSliderPreviewClick);
+copySliderHtmlButton?.addEventListener("click", () => copySliderSource("html"));
+copySliderCssButton?.addEventListener("click", () => copySliderSource("css"));
+copySliderJsButton?.addEventListener("click", () => copySliderSource("js"));
+copySliderAllButton?.addEventListener("click", copyAllSliderSource);
+copySliderHtmlInlineButton?.addEventListener("click", () => copySliderSource("html"));
+copySliderCssInlineButton?.addEventListener("click", () => copySliderSource("css"));
+copySliderJsInlineButton?.addEventListener("click", () => copySliderSource("js"));
 
 renderIcons();
 renderLayerList();
 updateResolutionHint();
 updateSelectedDeleteButton();
 updateExcelDownloadAvailability();
+updateCsvDownloadAvailability();
 initializeHotspotSections();
 updateHotspotControls();
 syncHotspotStages();
 renderHotspots();
+loadActiveSliderControls();
+updateSliderBuilder();
 
 function handleVideoUpload(event) {
   const [file] = event.target.files ?? [];
@@ -419,6 +529,1630 @@ function switchTab(targetId) {
   toolScreens.forEach((screen) => {
     screen.classList.toggle("is-active", screen.id === targetId);
   });
+}
+
+function createSliderItem(index = 1) {
+  const presetConfig = getBaseSwiperPresetConfig("basic");
+  return {
+    id: crypto.randomUUID(),
+    className: index === 1 ? "promo-slider" : `promo-slider-${index}`,
+    preset: "basic",
+    images: [],
+    currentIndex: 0,
+    options: {
+      slidesPerView: String(presetConfig.slidesPerView),
+      spaceBetween: String(presetConfig.spaceBetween),
+      speed: String(presetConfig.speed),
+      interval: String(presetConfig.interval),
+      direction: presetConfig.direction,
+      pagination: presetConfig.navigationType,
+      autoplay: presetConfig.autoplay,
+      loop: presetConfig.loop,
+      arrows: presetConfig.arrows,
+      centered: presetConfig.centeredSlides,
+    },
+  };
+}
+
+function getActiveSliderItem() {
+  return sliderState.activeSlider;
+}
+
+function saveActiveSliderControls() {
+  if (sliderState.isLoadingSliderControls) {
+    return;
+  }
+
+  const slider = getActiveSliderItem();
+  if (!slider) {
+    return;
+  }
+
+  slider.className = getSliderClassName();
+  slider.preset = getSliderSwiperPreset();
+  slider.options = {
+    slidesPerView: sliderSlidesPerViewInput?.value || "1",
+    spaceBetween: sliderSpaceBetweenInput?.value || "0",
+    speed: sliderSpeedInput?.value || "420",
+    interval: sliderIntervalInput?.value || "3000",
+    direction: sliderDirectionInput?.value || "horizontal",
+    pagination: sliderPaginationInput?.value || "none",
+    autoplay: Boolean(sliderAutoplayOptionInput?.checked),
+    loop: Boolean(sliderLoopOptionInput?.checked),
+    arrows: Boolean(sliderArrowsOptionInput?.checked),
+    centered: Boolean(sliderCenteredOptionInput?.checked),
+  };
+}
+
+function loadActiveSliderControls() {
+  const slider = getActiveSliderItem();
+  if (!slider) {
+    return;
+  }
+
+  sliderState.isLoadingSliderControls = true;
+  if (sliderNameInput) {
+    sliderNameInput.value = slider.className;
+  }
+  if (sliderSwiperPresetInput) {
+    sliderSwiperPresetInput.value = slider.preset;
+  }
+  if (sliderSlidesPerViewInput) {
+    sliderSlidesPerViewInput.value = slider.options.slidesPerView;
+  }
+  if (sliderSpaceBetweenInput) {
+    sliderSpaceBetweenInput.value = slider.options.spaceBetween;
+  }
+  if (sliderSpeedInput) {
+    sliderSpeedInput.value = slider.options.speed;
+  }
+  if (sliderIntervalInput) {
+    sliderIntervalInput.value = slider.options.interval;
+  }
+  if (sliderDirectionInput) {
+    sliderDirectionInput.value = slider.options.direction;
+  }
+  if (sliderPaginationInput) {
+    sliderPaginationInput.value = slider.options.pagination;
+  }
+  if (sliderAutoplayOptionInput) {
+    sliderAutoplayOptionInput.checked = slider.options.autoplay;
+  }
+  if (sliderLoopOptionInput) {
+    sliderLoopOptionInput.checked = slider.options.loop;
+  }
+  if (sliderArrowsOptionInput) {
+    sliderArrowsOptionInput.checked = slider.options.arrows;
+  }
+  if (sliderCenteredOptionInput) {
+    sliderCenteredOptionInput.checked = slider.options.centered;
+  }
+  sliderState.isLoadingSliderControls = false;
+}
+
+function renderSliderList() {
+  if (!sliderList) {
+    return;
+  }
+
+  sliderList.innerHTML = sliderState.sliders
+    .map(
+      (slider, index) => `<button class="slider-list-item${
+        slider.id === sliderState.selectedSliderId ? " is-active" : ""
+      }" type="button" data-slider-id="${slider.id}">
+        <span>${escapeHtml(slider.className || `slider-${index + 1}`)}</span>
+        <small>${slider.images.length}개</small>
+      </button>`
+    )
+    .join("");
+
+  if (deleteSliderButton) {
+    deleteSliderButton.disabled = sliderState.sliders.length <= 1;
+  }
+}
+
+function handleSliderListClick(event) {
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-slider-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  saveActiveSliderControls();
+  sliderState.selectedSliderId = button.dataset.sliderId || sliderState.selectedSliderId;
+  loadActiveSliderControls();
+  updateSliderBuilder();
+}
+
+function addSliderItem() {
+  saveActiveSliderControls();
+  const slider = createSliderItem(sliderState.sliders.length + 1);
+  sliderState.sliders.push(slider);
+  sliderState.selectedSliderId = slider.id;
+  loadActiveSliderControls();
+  sliderStatus.textContent = `${slider.className} 슬라이더를 추가했습니다.`;
+  updateSliderBuilder();
+}
+
+function deleteSelectedSliderItem() {
+  if (sliderState.sliders.length <= 1) {
+    return;
+  }
+
+  const selectedSlider = getActiveSliderItem();
+  selectedSlider?.images.forEach((image) => URL.revokeObjectURL(image.url));
+  sliderState.sliders = sliderState.sliders.filter((slider) => slider.id !== sliderState.selectedSliderId);
+  sliderState.selectedSliderId = sliderState.sliders[0].id;
+  loadActiveSliderControls();
+  sliderStatus.textContent = "선택한 슬라이더를 삭제했습니다.";
+  updateSliderBuilder();
+}
+
+function handleSliderImageUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  if (!files.length) {
+    return;
+  }
+
+  files.forEach((file) => {
+    sliderState.images.push({
+      id: crypto.randomUUID(),
+      name: file.name,
+      url: URL.createObjectURL(file),
+    });
+  });
+
+  sliderState.currentIndex = Math.min(sliderState.currentIndex, sliderState.images.length - 1);
+  sliderStatus.textContent = `${files.length}개 이미지를 추가했습니다. 소스는 아래에서 바로 복사할 수 있습니다.`;
+  event.target.value = "";
+  updateSliderBuilder();
+}
+
+function clearSliderImages() {
+  sliderState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  sliderState.images = [];
+  sliderState.currentIndex = 0;
+  sliderStatus.textContent = "슬라이드 이미지를 모두 삭제했습니다.";
+  updateSliderBuilder();
+}
+
+function handleSliderPresetChange() {
+  syncSliderOptionControlsToPreset();
+  updateSliderBuilder();
+}
+
+function syncSliderOptionControlsToPreset() {
+  const presetConfig = getBaseSwiperPresetConfig(getSliderSwiperPreset());
+  if (sliderSlidesPerViewInput) {
+    sliderSlidesPerViewInput.value = String(presetConfig.slidesPerView);
+  }
+  if (sliderSpaceBetweenInput) {
+    sliderSpaceBetweenInput.value = String(presetConfig.spaceBetween);
+  }
+  if (sliderSpeedInput) {
+    sliderSpeedInput.value = String(presetConfig.speed);
+  }
+  if (sliderIntervalInput) {
+    sliderIntervalInput.value = String(presetConfig.interval);
+  }
+  if (sliderDirectionInput) {
+    sliderDirectionInput.value = presetConfig.direction;
+  }
+  if (sliderPaginationInput) {
+    sliderPaginationInput.value = presetConfig.scrollbar ? "scrollbar" : presetConfig.navigationType;
+  }
+  if (sliderAutoplayOptionInput) {
+    sliderAutoplayOptionInput.checked = presetConfig.autoplay;
+  }
+  if (sliderLoopOptionInput) {
+    sliderLoopOptionInput.checked = presetConfig.loop;
+  }
+  if (sliderArrowsOptionInput) {
+    sliderArrowsOptionInput.checked = presetConfig.arrows;
+  }
+  if (sliderCenteredOptionInput) {
+    sliderCenteredOptionInput.checked = presetConfig.centeredSlides;
+  }
+}
+
+function updateSliderBuilder() {
+  saveActiveSliderControls();
+  renderSliderList();
+  renderSliderPreview();
+  updateSliderSources();
+  updateSliderControls();
+}
+
+function renderSliderPreview() {
+  if (!sliderPreview) {
+    return;
+  }
+
+  window.clearInterval(sliderState.timerId);
+  sliderState.timerId = null;
+  destroySliderPreviewSwiper();
+
+  if (!sliderState.images.length) {
+    sliderPreview.className = "slider-preview-empty";
+    sliderPreview.textContent = "슬라이드 이미지를 업로드해 주세요.";
+    sliderMeta.textContent = "업로드한 이미지 순서대로 슬라이더가 구성됩니다.";
+    return;
+  }
+
+  const className = getSliderClassName();
+  const preset = getSliderSwiperPreset();
+  const presetConfig = getSwiperPresetConfig(preset);
+  const loop = presetConfig.loop;
+  const continuous = isContinuousSlider();
+  const slides = sliderState.images
+    .map(
+      (image) => `
+        <div class="swiper-slide">
+          <img src="${image.url}" alt="${escapeHtml(image.name)}" />
+        </div>`
+    )
+    .join("");
+  const arrows = presetConfig.arrows && !continuous
+    ? `
+        <button class="${className}__arrow ${className}__arrow--prev" type="button" data-slider-prev aria-label="이전 슬라이드"></button>
+        <button class="${className}__arrow ${className}__arrow--next" type="button" data-slider-next aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = continuous ? "" : buildSwiperNavigationMarkup(className, presetConfig.navigationType, {
+    images: sliderState.images,
+    usePreviewUrls: true,
+  });
+  const scrollbar = presetConfig.scrollbar
+    ? `
+      <div class="${className}__scrollbar"></div>`
+    : "";
+
+  sliderPreview.className = "slider-preview";
+  sliderPreview.innerHTML = `
+    <div class="${className} swiper" data-slider-preview data-preset="${preset}" data-direction="${presetConfig.direction}">
+      <div class="swiper-wrapper">
+        ${slides}
+      </div>
+      ${arrows}
+      ${navigation}
+      ${scrollbar}
+    </div>`;
+
+  sliderMeta.textContent = `슬라이드 ${sliderState.images.length}개 · Swiper · ${getSwiperPresetLabel(
+    preset
+  )}${loop ? " · 무한 반복" : ""}`;
+
+  initializeSliderPreviewSwiper(className, presetConfig);
+}
+
+function handleSliderPreviewClick(event) {
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || !sliderState.images.length) {
+    return;
+  }
+
+  if (target.closest("[data-slider-prev]")) {
+    moveSliderPreview(-1);
+    return;
+  }
+
+  if (target.closest("[data-slider-next]")) {
+    moveSliderPreview(1);
+    return;
+  }
+
+  const dot = target.closest("[data-slider-dot]");
+  if (dot instanceof HTMLElement) {
+    sliderState.currentIndex = Number(dot.dataset.sliderDot || 0);
+    applySliderPreviewState();
+  }
+}
+
+function moveSliderPreview(delta) {
+  if (!sliderState.images.length) {
+    return;
+  }
+
+  if (sliderState.previewSwiper) {
+    if (delta > 0) {
+      sliderState.previewSwiper.slideNext();
+    } else {
+      sliderState.previewSwiper.slidePrev();
+    }
+    return;
+  }
+
+  sliderState.currentIndex =
+    (sliderState.currentIndex + delta + sliderState.images.length) % sliderState.images.length;
+  applySliderPreviewState();
+}
+
+function destroySliderPreviewSwiper() {
+  if (!sliderState.previewSwiper) {
+    return;
+  }
+
+  sliderState.previewSwiper.destroy(true, true);
+  sliderState.previewSwiper = null;
+}
+
+function loadSwiperLibrary() {
+  if (window.Swiper) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    if (!document.querySelector('link[data-swiper-cdn]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css";
+      link.dataset.swiperCdn = "true";
+      document.head.appendChild(link);
+    }
+
+    const existingScript = document.querySelector('script[data-swiper-cdn]');
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js";
+    script.dataset.swiperCdn = "true";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+function initializeSliderPreviewSwiper(className, presetConfig) {
+  const slider = sliderPreview?.querySelector("[data-slider-preview]");
+  if (!slider) {
+    return;
+  }
+
+  loadSwiperLibrary()
+    .then(() => {
+      const options = buildSwiperOptionsForElement(slider, className, presetConfig, {
+        interval: presetConfig.interval,
+        loop: presetConfig.loop && sliderState.images.length > 1,
+        autoplay: presetConfig.autoplay,
+      });
+      sliderState.previewSwiper = new window.Swiper(slider, options);
+      bindSwiperThumbButtons(sliderState.previewSwiper, slider);
+      applyContinuousSwiperTiming(sliderState.previewSwiper, slider, options);
+    })
+    .catch(() => {
+      sliderStatus.textContent =
+        "Swiper CDN을 불러오지 못했습니다. 인터넷 연결 후 다시 확인해 주세요.";
+    });
+}
+
+function buildSwiperOptionsForElement(slider, className, presetConfig, settings) {
+  const continuous = settings.loop && presetConfig.effect === "slide";
+  const options = {
+    effect: presetConfig.effect,
+    direction: presetConfig.direction,
+    loop: settings.loop,
+    speed: continuous ? settings.interval : presetConfig.speed,
+    slidesPerView: presetConfig.slidesPerView,
+    spaceBetween: presetConfig.spaceBetween,
+    centeredSlides: presetConfig.centeredSlides,
+    freeMode: presetConfig.freeMode,
+    autoHeight: presetConfig.autoHeight,
+    grabCursor: true,
+  };
+
+  if (presetConfig.effect === "coverflow") {
+    options.coverflowEffect = {
+      rotate: 45,
+      stretch: 0,
+      depth: 120,
+      modifier: 1,
+      slideShadows: true,
+    };
+  }
+
+  if (settings.autoplay) {
+    options.autoplay = {
+      delay: continuous ? 0 : settings.interval,
+      disableOnInteraction: false,
+    };
+  }
+
+  if (continuous) {
+    options.allowTouchMove = false;
+    options.freeMode = true;
+  }
+
+  const prevEl = slider.querySelector(`.${className}__arrow--prev`);
+  const nextEl = slider.querySelector(`.${className}__arrow--next`);
+  if (prevEl && nextEl) {
+    options.navigation = { prevEl, nextEl };
+  }
+
+  const paginationEl = slider.querySelector(`.${className}__pagination`);
+  if (paginationEl && presetConfig.navigationType !== "thumbnails") {
+    options.pagination = {
+      el: paginationEl,
+      clickable: true,
+      dynamicBullets: presetConfig.navigationType === "dynamic",
+      type:
+        presetConfig.navigationType === "counter"
+          ? "fraction"
+          : presetConfig.navigationType === "progress"
+            ? "progressbar"
+            : "bullets",
+    };
+  }
+
+  const scrollbarEl = slider.querySelector(`.${className}__scrollbar`);
+  if (scrollbarEl) {
+    options.scrollbar = {
+      el: scrollbarEl,
+      draggable: true,
+    };
+  }
+
+  return options;
+}
+
+function bindSwiperThumbButtons(swiper, slider) {
+  const thumbs = Array.from(slider.querySelectorAll("[data-swiper-thumb]"));
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener("click", () => {
+      swiper.slideTo(Number(thumb.dataset.swiperThumb || 0));
+    });
+  });
+  swiper.on("slideChange", () => {
+    thumbs.forEach((thumb, index) => {
+      thumb.classList.toggle("is-active", index === swiper.realIndex);
+    });
+  });
+}
+
+function applyContinuousSwiperTiming(swiper, slider, options) {
+  if (!options.loop || options.effect !== "slide" || !options.autoplay) {
+    return;
+  }
+
+  const wrapper = slider.querySelector(".swiper-wrapper");
+  if (wrapper) {
+    wrapper.style.transitionTimingFunction = "linear";
+  }
+  swiper.on("setTransition", (_swiper, duration) => {
+    if (duration > 0 && wrapper) {
+      wrapper.style.transitionTimingFunction = "linear";
+    }
+  });
+}
+
+function applySliderPreviewState() {
+  if (!sliderPreview || !sliderState.images.length) {
+    return;
+  }
+
+  const className = getSliderClassName();
+  const presetConfig = getSwiperPresetConfig(getSliderSwiperPreset());
+  const slides = sliderPreview.querySelectorAll(`[class~="${className}__slide"]`);
+  const dots = sliderPreview.querySelectorAll("[data-slider-dot]");
+  const counterCurrent = sliderPreview.querySelector("[data-slider-current]");
+  const progressBar = sliderPreview.querySelector("[data-slider-progress]");
+  const track = sliderPreview.querySelector(`[class~="${className}__track"]`);
+
+  slides.forEach((slide, index) => {
+    slide.classList.toggle("is-active", index === sliderState.currentIndex);
+  });
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === sliderState.currentIndex);
+  });
+  if (counterCurrent) {
+    counterCurrent.textContent = String(sliderState.currentIndex + 1);
+  }
+  if (progressBar) {
+    progressBar.style.width =
+      ((sliderState.currentIndex + 1) / sliderState.images.length) * 100 + "%";
+  }
+  if (track) {
+    track.style.transform =
+      presetConfig.effect === "slide" ? `translateX(${sliderState.currentIndex * -100}%)` : "";
+  }
+
+  sliderMeta.textContent = `슬라이드 ${sliderState.images.length}개 · 현재 ${
+    sliderState.currentIndex + 1
+  }번째 이미지 · Swiper · ${getSwiperPresetLabel(getSliderSwiperPreset())} · ${getSliderNavigationLabel(
+    presetConfig.navigationType
+  )} · ${getSliderTransitionLabel(presetConfig.effect)}${presetConfig.loop ? " · 무한 반복" : ""}`;
+}
+
+function updateSliderSources() {
+  if (!sliderHtmlCode || !sliderCssCode || !sliderJsCode) {
+    return;
+  }
+
+  if (!sliderState.sliders.some((slider) => slider.images.length)) {
+    sliderState.generated = { html: "", css: "", js: "" };
+    sliderHtmlCode.textContent = "";
+    sliderCssCode.textContent = "";
+    sliderJsCode.textContent = "";
+    return;
+  }
+
+  sliderState.generated = buildAllSliderSources();
+  sliderHtmlCode.textContent = sliderState.generated.html;
+  sliderCssCode.textContent = sliderState.generated.css;
+  sliderJsCode.textContent = sliderState.generated.js;
+}
+
+function updateSliderControls() {
+  const hasImages = sliderState.sliders.some((slider) => slider.images.length > 0);
+  const activeHasImages = sliderState.images.length > 0;
+  if (clearSliderImagesButton) {
+    clearSliderImagesButton.disabled = !activeHasImages;
+  }
+  [
+    copySliderHtmlButton,
+    copySliderCssButton,
+    copySliderJsButton,
+    copySliderAllButton,
+    copySliderHtmlInlineButton,
+    copySliderCssInlineButton,
+    copySliderJsInlineButton,
+  ].forEach((button) => {
+    if (button) {
+      button.disabled = !hasImages;
+    }
+  });
+}
+
+function buildSliderSource() {
+  return buildSwiperSliderSource(getActiveSliderItem());
+}
+
+function buildAllSliderSources() {
+  const sources = sliderState.sliders
+    .filter((slider) => slider.images.length)
+    .map((slider) => ({
+      slider,
+      source: buildSwiperSliderSource(slider),
+    }));
+
+  return {
+    html: sources
+      .map(({ slider, source }) => `<!-- ${slider.className} -->\n${source.html}`)
+      .join("\n\n"),
+    css: sources
+      .map(({ slider, source }) => `/* ${slider.className} */\n${source.css}`)
+      .join("\n\n"),
+    js: `<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+${sources
+  .map(({ slider, source }) => `<!-- ${slider.className} -->\n${source.jsInit}`)
+  .join("\n\n")}`,
+  };
+}
+
+function buildCustomSliderSource() {
+  const className = getSliderClassName();
+  const showArrows = sliderArrowsInput?.checked ?? true;
+  const navigationType = getSliderNavigationType();
+  const transitionType = getSliderTransitionType();
+  const autoplay = sliderAutoplayInput?.checked ?? true;
+  const loop = getSliderLoop() && transitionType === "slide" && sliderState.images.length > 1;
+  const interval = getSliderInterval();
+  const sourceSlides = loop ? [...sliderState.images, ...sliderState.images] : sliderState.images;
+  const slides = sourceSlides
+    .map(
+      (image, index) => `    <div class="${className}__slide${
+        index === 0 ? " is-active" : ""
+      }${image.clone ? ` ${className}__slide--clone` : ""}">
+      <img src="./images/${escapeHtml(sanitizeExportFileName(image.name))}" alt="${escapeHtml(
+        getSliderAltText(image.name)
+      )}" />
+    </div>`
+    )
+    .join("\n");
+  const arrows = showArrows && !loop
+    ? `
+    <button class="${className}__arrow ${className}__arrow--prev" type="button" data-slider-prev aria-label="이전 슬라이드"></button>
+    <button class="${className}__arrow ${className}__arrow--next" type="button" data-slider-next aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = loop
+    ? ""
+    : buildSliderNavigationMarkup(className, navigationType, {
+        images: sliderState.images,
+        currentIndex: 0,
+        usePreviewUrls: false,
+      });
+
+  const trackStyle = loop ? ` style="--slider-duration: ${getContinuousSliderDuration()}ms;"` : "";
+  const html = `<div class="${className} ${className}--${transitionType}${
+    loop ? ` ${className}--continuous` : ""
+  }" data-slider data-autoplay="${autoplay}" data-interval="${interval}" data-loop="${loop}">
+  <div class="${className}__viewport">
+    <div class="${className}__track"${trackStyle}>
+${slides}
+    </div>${arrows}
+  </div>${navigation}
+</div>`;
+
+  const css = `@import url("https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css");
+
+.${className} {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.${className}__viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.${className}__track {
+  position: relative;
+}
+
+.${className}--slide .${className}__track {
+  display: flex;
+  transition: transform 420ms ease;
+}
+
+.${className}--continuous .${className}__track {
+  animation: ${className}-continuous-slide var(--slider-duration, 12000ms) linear infinite;
+  transition: none;
+}
+
+.${className}--continuous:hover .${className}__track {
+  animation-play-state: paused;
+}
+
+.${className}__slide {
+  display: none;
+}
+
+.${className}__slide.is-active {
+  display: block;
+}
+
+.${className}--slide .${className}__slide {
+  display: block;
+  width: 100%;
+  flex: 0 0 100%;
+}
+
+.${className}--continuous .${className}__slide {
+  width: 100vw;
+}
+
+.${className}__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes ${className}-continuous-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.${className}__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.55);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.${className}__arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+}
+
+.${className}__arrow--prev {
+  left: 16px;
+}
+
+.${className}__arrow--prev::before {
+  transform: translate(-35%, -50%) rotate(-45deg);
+}
+
+.${className}__arrow--next {
+  right: 16px;
+}
+
+.${className}__arrow--next::before {
+  transform: translate(-65%, -50%) rotate(135deg);
+}
+
+.${className}__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #c7c7c7;
+  cursor: pointer;
+}
+
+.${className}__dot.is-active {
+  width: 24px;
+  background: #111;
+}
+
+.${className}__counter {
+  margin-top: 14px;
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.${className}__progress {
+  position: relative;
+  height: 3px;
+  margin-top: 14px;
+  overflow: hidden;
+  background: #e5e5e5;
+}
+
+.${className}__progress-bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #111;
+  transition: width 320ms ease;
+}
+
+.${className}__thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__thumb {
+  padding: 0;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.${className}__thumb.is-active {
+  border-color: #111;
+}
+
+.${className}__thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}`;
+
+  const js = `document.querySelectorAll("[data-slider]").forEach((slider) => {
+  const slides = Array.from(slider.querySelectorAll(".${className}__slide"));
+  const dots = Array.from(slider.querySelectorAll("[data-slider-dot]"));
+  const counterCurrent = slider.querySelector("[data-slider-current]");
+  const progressBar = slider.querySelector("[data-slider-progress]");
+  const prevButton = slider.querySelector("[data-slider-prev]");
+  const nextButton = slider.querySelector("[data-slider-next]");
+  const autoplay = slider.dataset.autoplay === "true";
+  const loop = slider.dataset.loop === "true" && slider.classList.contains("${className}--slide");
+  const continuous = slider.classList.contains("${className}--continuous");
+  const interval = Number(slider.dataset.interval || ${interval});
+  let currentIndex = 0;
+  let visualIndex = 0;
+  let timerId = null;
+
+  const getRealIndex = () => {
+    if (!loop) return currentIndex;
+    if (currentIndex === 0) return slides.length - 3;
+    if (currentIndex === slides.length - 1) return 0;
+    return currentIndex - 1;
+  };
+
+  const syncNavigation = () => {
+    visualIndex = getRealIndex();
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("is-active", slideIndex === currentIndex);
+    });
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("is-active", dotIndex === visualIndex);
+    });
+    if (counterCurrent) {
+      counterCurrent.textContent = String(visualIndex + 1);
+    }
+    if (progressBar) {
+      progressBar.style.width = ((visualIndex + 1) / ${sliderState.images.length}) * 100 + "%";
+    }
+  };
+
+  const jumpWithoutAnimation = (index) => {
+    const track = slider.querySelector(".${className}__track");
+    if (!track) return;
+    track.style.transition = "none";
+    currentIndex = index;
+    track.style.transform = "translateX(" + currentIndex * -100 + "%)";
+    syncNavigation();
+    track.offsetHeight;
+    track.style.transition = "";
+  };
+
+  const showSlide = (index, options = {}) => {
+    if (!slides.length) return;
+    if (continuous) return;
+    currentIndex = loop ? index : (index + slides.length) % slides.length;
+    if (slider.classList.contains("${className}--slide")) {
+      const track = slider.querySelector(".${className}__track");
+      if (track) {
+        track.style.transform = "translateX(" + currentIndex * -100 + "%)";
+        if (loop && !options.skipLoopFix) {
+          track.addEventListener(
+            "transitionend",
+            () => {
+              if (currentIndex === 0) {
+                jumpWithoutAnimation(slides.length - 2);
+              } else if (currentIndex === slides.length - 1) {
+                jumpWithoutAnimation(1);
+              }
+            },
+            { once: true }
+          );
+      }
+    }
+    }
+    syncNavigation();
+  };
+
+  const move = (delta) => {
+    showSlide(currentIndex + delta);
+  };
+
+  const restart = () => {
+    if (continuous || !autoplay || slides.length < 2) return;
+    window.clearInterval(timerId);
+    timerId = window.setInterval(() => move(1), interval);
+  };
+
+  prevButton?.addEventListener("click", () => {
+    move(-1);
+    restart();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    move(1);
+    restart();
+  });
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      showSlide(Number(dot.dataset.sliderDot || 0) + (loop ? 1 : 0));
+      restart();
+    });
+  });
+
+  showSlide(loop ? 1 : 0, { skipLoopFix: true });
+  restart();
+});`;
+
+  return { html, css, js };
+}
+
+function buildSwiperSliderSource(slider = getActiveSliderItem()) {
+  const className = getSliderClassName(slider?.className);
+  const preset = getSliderSwiperPreset(slider);
+  const presetConfig = getSwiperPresetConfig(preset, slider?.options);
+  const autoplay = presetConfig.autoplay;
+  const images = slider?.images ?? [];
+  const loop = presetConfig.loop && presetConfig.effect === "slide" && images.length > 1;
+  const interval = presetConfig.interval;
+  const slides = images
+    .map(
+      (image) => `    <div class="swiper-slide">
+      <img src="./images/${escapeHtml(sanitizeExportFileName(image.name))}" alt="${escapeHtml(
+        getSliderAltText(image.name)
+      )}" />
+    </div>`
+    )
+    .join("\n");
+  if (preset === "multi-view") {
+    return buildSwiperDemoSource({
+      className,
+      preset,
+      presetConfig,
+      slides,
+      css: buildSlidesPerViewCss(className),
+      options: buildSwiperInitOptionsSource(className, presetConfig, {
+        interval,
+        loop,
+      }),
+    });
+  }
+  const arrows = presetConfig.arrows && !presetConfig.continuous
+    ? `
+    <button class="${className}__arrow ${className}__arrow--prev" type="button" aria-label="이전 슬라이드"></button>
+    <button class="${className}__arrow ${className}__arrow--next" type="button" aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = presetConfig.continuous
+    ? ""
+    : buildSwiperNavigationMarkup(className, presetConfig.navigationType);
+  const scrollbar = presetConfig.scrollbar
+    ? `
+  <div class="${className}__scrollbar"></div>`
+    : "";
+
+  const html = `<div class="${className} swiper" data-swiper-slider data-preset="${preset}" data-effect="${presetConfig.effect}" data-direction="${presetConfig.direction}" data-slides-per-view="${presetConfig.slidesPerView}" data-space-between="${presetConfig.spaceBetween}" data-centered="${presetConfig.centeredSlides}" data-free-mode="${presetConfig.freeMode}" data-auto-height="${presetConfig.autoHeight}" data-autoplay="${autoplay}" data-interval="${interval}" data-navigation="${presetConfig.navigationType}" data-loop="${loop}">
+  <div class="swiper-wrapper">
+${slides}
+  </div>${arrows}${navigation}${scrollbar}
+</div>`;
+
+  const css = `.${className} {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.${className}[data-direction="vertical"] {
+  height: 560px;
+}
+
+.${className} .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.${className}[data-slides-per-view="auto"] .swiper-slide {
+  width: 72%;
+}
+
+.${className}[data-preset="multi-view"] .swiper-slide {
+  min-width: 0;
+}
+
+.${className}__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.55);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.${className}__arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+}
+
+.${className}__arrow--prev {
+  left: 16px;
+}
+
+.${className}__arrow--prev::before {
+  transform: translate(-35%, -50%) rotate(-45deg);
+}
+
+.${className}__arrow--next {
+  right: 16px;
+}
+
+.${className}__arrow--next::before {
+  transform: translate(-65%, -50%) rotate(135deg);
+}
+
+.${className}__pagination {
+  position: static;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.${className}__pagination .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+  margin: 0;
+  background: #c7c7c7;
+  opacity: 1;
+}
+
+.${className}__pagination .swiper-pagination-bullet-active {
+  width: 24px;
+  border-radius: 999px;
+  background: #111;
+}
+
+.${className}__pagination.swiper-pagination-fraction {
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.${className}__pagination.swiper-pagination-progressbar {
+  position: relative;
+  height: 3px;
+  margin-top: 14px;
+  background: #e5e5e5;
+}
+
+.${className}__pagination .swiper-pagination-progressbar-fill {
+  background: #111;
+}
+
+.${className}__scrollbar {
+  position: relative;
+  height: 4px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: #e5e5e5;
+}
+
+.${className}__scrollbar .swiper-scrollbar-drag {
+  background: #111;
+}
+
+.${className}__thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__thumb {
+  padding: 0;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.${className}__thumb.is-active {
+  border-color: #111;
+}
+
+.${className}__thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}`;
+
+  const js = buildSwiperScriptSource(
+    className,
+    buildSwiperInitOptionsSource(className, presetConfig, {
+      interval,
+      loop,
+    })
+  );
+  const jsInit = buildSwiperInitScriptSource(
+    className,
+    buildSwiperInitOptionsSource(className, presetConfig, {
+      interval,
+      loop,
+    })
+  );
+
+  return { html, css, js, jsInit };
+}
+
+function buildSwiperDemoSource({ className, preset, presetConfig, slides, css, options }) {
+  const navigation = buildSwiperNavigationMarkup(className, presetConfig.navigationType);
+  const html = `<div class="swiper ${className}" data-swiper-slider data-preset="${preset}">
+  <div class="swiper-wrapper">
+${slides}
+  </div>${navigation}
+</div>`;
+  const js = buildSwiperScriptSource(className, options);
+  const jsInit = buildSwiperInitScriptSource(className, options);
+
+  return { html, css, js, jsInit };
+}
+
+function buildSwiperScriptSource(className, options) {
+  return `<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+${buildSwiperInitScriptSource(className, options)}`;
+}
+
+function buildSwiperInitScriptSource(className, options) {
+  return `<!-- Initialize Swiper -->
+<script>
+  var ${toSafeVariableName(className)} = new Swiper(".${className}", ${options});
+</script>`;
+}
+
+function toSafeVariableName(className) {
+  const name = String(className || "swiper")
+    .replaceAll(/[^a-zA-Z0-9_$]/g, "_")
+    .replaceAll(/_+/g, "_");
+  return /^[a-zA-Z_$]/.test(name) ? `${name}Swiper` : `swiper${name}Swiper`;
+}
+
+function buildSwiperInitOptionsSource(className, presetConfig, settings = {}) {
+  const interval = settings.interval ?? presetConfig.interval ?? 3000;
+  const loop = settings.loop ?? presetConfig.loop;
+  const continuous = presetConfig.continuous && loop && presetConfig.effect === "slide";
+  const options = [
+    `effect: "${presetConfig.effect}"`,
+    `direction: "${presetConfig.direction}"`,
+    `loop: ${loop}`,
+    `speed: ${continuous ? interval : presetConfig.speed}`,
+    `slidesPerView: ${
+      presetConfig.slidesPerView === "auto" ? `"auto"` : presetConfig.slidesPerView
+    }`,
+    `spaceBetween: ${presetConfig.spaceBetween}`,
+    `centeredSlides: ${presetConfig.centeredSlides}`,
+    `freeMode: ${continuous || presetConfig.freeMode}`,
+    `autoHeight: ${presetConfig.autoHeight}`,
+    `grabCursor: true`,
+  ];
+
+  if (presetConfig.effect === "coverflow") {
+    options.push(`coverflowEffect: {
+    rotate: 45,
+    stretch: 0,
+    depth: 120,
+    modifier: 1,
+    slideShadows: true,
+  }`);
+  }
+
+  if (presetConfig.autoplay) {
+    options.push(`autoplay: {
+    delay: ${continuous ? 0 : interval},
+    disableOnInteraction: false,
+  }`);
+  }
+
+  if (continuous) {
+    options.push(`allowTouchMove: false`);
+    options.push(`on: {
+    init: function () {
+      this.wrapperEl.style.transitionTimingFunction = "linear";
+    },
+    setTransition: function () {
+      this.wrapperEl.style.transitionTimingFunction = "linear";
+    },
+  }`);
+  }
+
+  if (presetConfig.arrows && !presetConfig.continuous) {
+    options.push(`navigation: {
+    nextEl: ".${className}__arrow--next",
+    prevEl: ".${className}__arrow--prev",
+  }`);
+  }
+
+  if (presetConfig.navigationType && presetConfig.navigationType !== "none" && presetConfig.navigationType !== "thumbnails") {
+    options.push(`pagination: {
+    el: ".${className}__pagination",
+    clickable: true,
+    dynamicBullets: ${presetConfig.navigationType === "dynamic"},
+    type: "${
+      presetConfig.navigationType === "counter"
+        ? "fraction"
+        : presetConfig.navigationType === "progress"
+          ? "progressbar"
+          : "bullets"
+    }",
+  }`);
+  }
+
+  if (presetConfig.scrollbar) {
+    options.push(`scrollbar: {
+    el: ".${className}__scrollbar",
+    draggable: true,
+  }`);
+  }
+
+  return `{
+  ${options.join(",\n  ")}
+}`;
+}
+
+function buildSlidesPerViewCss(className) {
+  return `@import url("https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css");
+
+.${className} {
+  width: 100%;
+  height: 100%;
+}
+
+.${className} .swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.${className} .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.${className}__pagination {
+  position: static;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+  text-align: center;
+}`;
+}
+
+function buildSliderNavigationMarkup(className, navigationType, options) {
+  const { images, currentIndex, usePreviewUrls } = options;
+
+  if (navigationType === "none") {
+    return "";
+  }
+
+  if (navigationType === "counter") {
+    return `
+  <div class="${className}__counter" aria-live="polite">
+    <span data-slider-current>${currentIndex + 1}</span> / <span>${images.length}</span>
+  </div>`;
+  }
+
+  if (navigationType === "progress") {
+    const width = images.length ? ((currentIndex + 1) / images.length) * 100 : 0;
+    return `
+  <div class="${className}__progress" aria-hidden="true">
+    <span class="${className}__progress-bar" data-slider-progress style="width: ${width}%;"></span>
+  </div>`;
+  }
+
+  if (navigationType === "thumbnails") {
+    return `
+  <div class="${className}__thumbs">
+${images
+  .map((image, index) => {
+    const src = usePreviewUrls ? image.url : `./images/${sanitizeExportFileName(image.name)}`;
+    return `    <button class="${className}__thumb${
+      index === currentIndex ? " is-active" : ""
+    }" type="button" data-slider-dot="${index}" aria-label="${index + 1}번 슬라이드">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(getSliderAltText(image.name))}" />
+    </button>`;
+  })
+  .join("\n")}
+  </div>`;
+  }
+
+  return `
+  <div class="${className}__dots">
+${images
+  .map(
+    (_, index) =>
+      `    <button class="${className}__dot${
+        index === currentIndex ? " is-active" : ""
+      }" type="button" data-slider-dot="${index}" aria-label="${index + 1}번 슬라이드"></button>`
+  )
+  .join("\n")}
+  </div>`;
+}
+
+function buildSwiperNavigationMarkup(className, navigationType, options = {}) {
+  const images = options.images ?? sliderState.images;
+  const usePreviewUrls = options.usePreviewUrls ?? false;
+
+  if (navigationType === "none") {
+    return "";
+  }
+
+  if (navigationType === "thumbnails") {
+    return `
+  <div class="${className}__thumbs">
+${images
+  .map(
+    (image, index) => {
+      const src = usePreviewUrls ? image.url : `./images/${sanitizeExportFileName(image.name)}`;
+      return `    <button class="${className}__thumb${
+        index === 0 ? " is-active" : ""
+      }" type="button" data-swiper-thumb="${index}" aria-label="${index + 1}번 슬라이드">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(getSliderAltText(image.name))}" />
+    </button>`
+    }
+  )
+  .join("\n")}
+  </div>`;
+  }
+
+  return `
+  <div class="${className}__pagination"></div>`;
+}
+
+function getBaseSwiperPresetConfig(preset) {
+  const config = {
+    effect: "slide",
+    direction: "horizontal",
+    navigationType: "none",
+    slidesPerView: 1,
+    spaceBetween: 0,
+    speed: 420,
+    centeredSlides: false,
+    freeMode: false,
+    autoHeight: false,
+    scrollbar: false,
+    arrows: false,
+    autoplay: false,
+    loop: false,
+    continuous: false,
+    interval: 3000,
+  };
+
+  if (preset === "navigation") {
+    config.arrows = true;
+  }
+  if (preset === "pagination") {
+    config.navigationType = "dots";
+  }
+  if (preset === "dynamic-pagination") {
+    config.navigationType = "dynamic";
+  }
+  if (preset === "scrollbar") {
+    config.navigationType = "none";
+    config.scrollbar = true;
+  }
+  if (preset === "autoplay") {
+    config.navigationType = "dots";
+    config.autoplay = true;
+  }
+  if (preset === "loop") {
+    config.navigationType = "dots";
+    config.loop = true;
+  }
+  if (preset === "continuous") {
+    config.autoplay = true;
+    config.loop = true;
+    config.continuous = true;
+    config.interval = 6000;
+  }
+  if (preset === "vertical") {
+    config.direction = "vertical";
+  }
+  if (preset === "free-mode") {
+    config.slidesPerView = "auto";
+    config.spaceBetween = 16;
+    config.freeMode = true;
+  }
+  if (preset === "centered") {
+    config.slidesPerView = "auto";
+    config.spaceBetween = 16;
+    config.centeredSlides = true;
+  }
+  if (preset === "multi-view") {
+    config.slidesPerView = 3;
+    config.spaceBetween = 30;
+    config.navigationType = "dots";
+  }
+  if (preset === "auto-height") {
+    config.autoHeight = true;
+  }
+  if (["fade", "cube", "coverflow", "flip", "cards"].includes(preset)) {
+    config.effect = preset;
+  }
+  if (preset === "coverflow") {
+    config.slidesPerView = "auto";
+    config.centeredSlides = true;
+    config.spaceBetween = 16;
+  }
+  if (preset === "thumbs") {
+    config.navigationType = "thumbnails";
+  }
+
+  return config;
+}
+
+function getSwiperPresetConfig(preset, settings = null) {
+  const config = getBaseSwiperPresetConfig(preset);
+  const slidesPerView = settings?.slidesPerView ?? sliderSlidesPerViewInput?.value ?? String(config.slidesPerView);
+  const spaceBetween = Number(settings?.spaceBetween ?? sliderSpaceBetweenInput?.value ?? config.spaceBetween);
+  const speed = Number(settings?.speed ?? sliderSpeedInput?.value ?? config.speed);
+  const interval = Number(settings?.interval ?? sliderIntervalInput?.value ?? config.interval);
+  const direction = settings?.direction ?? sliderDirectionInput?.value ?? config.direction;
+  const navigationType = settings?.pagination ?? sliderPaginationInput?.value ?? config.navigationType;
+
+  config.slidesPerView = slidesPerView === "auto" ? "auto" : Number(slidesPerView || 1);
+  config.spaceBetween = Math.max(0, spaceBetween);
+  config.speed = Math.max(100, speed);
+  config.interval = Math.max(0, interval);
+  config.direction = direction === "vertical" ? "vertical" : "horizontal";
+  config.navigationType = navigationType;
+  config.autoplay = settings ? Boolean(settings.autoplay) : Boolean(sliderAutoplayOptionInput?.checked);
+  config.loop = settings ? Boolean(settings.loop) : Boolean(sliderLoopOptionInput?.checked);
+  config.arrows = settings ? Boolean(settings.arrows) : Boolean(sliderArrowsOptionInput?.checked);
+  config.centeredSlides = settings
+    ? Boolean(settings.centered)
+    : Boolean(sliderCenteredOptionInput?.checked);
+
+  config.scrollbar = navigationType === "scrollbar";
+  if (config.scrollbar) {
+    config.navigationType = "none";
+  }
+  if (config.navigationType === "thumbnails") {
+    config.scrollbar = false;
+  }
+  if (config.effect !== "slide") {
+    config.loop = false;
+    config.continuous = false;
+  }
+  if (config.continuous) {
+    config.autoplay = true;
+    config.loop = true;
+    config.arrows = false;
+    config.navigationType = "none";
+    config.scrollbar = false;
+  }
+
+  return config;
+}
+
+async function copySliderSource(type) {
+  const value = sliderState.generated[type] ?? "";
+  if (!value) {
+    return;
+  }
+
+  await copyText(value);
+  sliderStatus.textContent = `${type.toUpperCase()} 소스를 복사했습니다.`;
+}
+
+async function copyAllSliderSource() {
+  const { html, css, js } = sliderState.generated;
+  if (!html || !css || !js) {
+    return;
+  }
+
+  await copyText(`<!-- HTML -->\n${html}\n\n/* CSS */\n${css}\n\n// JS\n${js}`);
+  sliderStatus.textContent = "HTML/CSS/JS 전체 소스를 복사했습니다.";
+}
+
+async function copyText(value) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function getSliderClassName(value = null) {
+  const rawValue = value ?? sliderNameInput?.value ?? "promo-slider";
+  const className = rawValue
+    .trim()
+    .replaceAll(/[^a-zA-Z0-9_-]/g, "-")
+    .replaceAll(/-+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+
+  if (!className) {
+    return "promo-slider";
+  }
+
+  return /^[a-zA-Z_-]/.test(className) ? className : `slider-${className}`;
+}
+
+function getSliderInterval() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).interval;
+}
+
+function getContinuousSliderDuration() {
+  return Math.max(getSliderInterval() * Math.max(sliderState.images.length, 1), 4000);
+}
+
+function isContinuousSlider() {
+  const presetConfig = getSwiperPresetConfig(getSliderSwiperPreset());
+  return presetConfig.continuous && sliderState.images.length > 1;
+}
+
+function getSliderSwiperPreset(slider = null) {
+  return slider?.preset || sliderSwiperPresetInput?.value || "basic";
+}
+
+function getSliderLoop() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).loop;
+}
+
+function getSliderNavigationType() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).navigationType;
+}
+
+function getSliderTransitionType() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).effect;
+}
+
+function getSliderNavigationLabel(type) {
+  return (
+    {
+      dots: "도트",
+      counter: "숫자",
+      progress: "프로그레스",
+      thumbnails: "썸네일",
+      none: "네비게이션 없음",
+    }[type] || "도트"
+  );
+}
+
+function getSliderTransitionLabel(type) {
+  return type === "slide" ? "좌우 슬라이드" : "페이드";
+}
+
+function getSwiperPresetLabel(type) {
+  return (
+    {
+      basic: "기본",
+      pagination: "Pagination",
+      "dynamic-pagination": "Dynamic Pagination",
+      scrollbar: "Scrollbar",
+      vertical: "Vertical",
+      "free-mode": "Free Mode",
+      centered: "Centered",
+      "multi-view": "Slides Per View",
+      "auto-height": "Auto Height",
+      fade: "Fade",
+      cube: "Cube",
+      coverflow: "Coverflow",
+      flip: "Flip",
+      cards: "Cards",
+      thumbs: "Thumbs",
+    }[type] || "기본"
+  );
+}
+
+function getSliderAltText(fileName) {
+  return String(fileName || "slide").replace(/\.[^.]+$/, "");
 }
 
 function createEmptyHotspotSection(index = hotspotState.sections.length + 1) {
@@ -1918,6 +3652,12 @@ function updateExcelDownloadAvailability() {
   }
 }
 
+function updateCsvDownloadAvailability() {
+  if (csvDownloadButton) {
+    csvDownloadButton.disabled = !csvState.csvText;
+  }
+}
+
 function applySpacingSettings() {
   state.leftMargin = Math.max(0, Number(leftMarginInput.value) || 0);
   state.topMargin = Math.max(0, Number(topMarginInput.value) || 0);
@@ -2249,6 +3989,172 @@ function downloadExcelJson() {
   const anchor = document.createElement("a");
   anchor.href = downloadUrl;
   anchor.download = `${baseName}.json`;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+}
+
+async function handleCsvMergeUpload() {
+  const files = Array.from(csvMergeInput?.files ?? []);
+  if (!files.length) {
+    csvState.fileNames = [];
+    csvState.csvText = "";
+    csvState.rowCount = 0;
+    csvState.columnCount = 0;
+    csvMeta.textContent = "합쳐진 CSV 데이터 일부가 여기에 표시됩니다.";
+    csvPreview.textContent = "아직 업로드된 CSV 파일이 없습니다.";
+    csvStatus.textContent = "CSV 파일을 여러 개 업로드하면 합쳐진 데이터 미리보기가 표시됩니다.";
+    updateCsvDownloadAvailability();
+    return;
+  }
+
+  try {
+    const parsedFiles = await Promise.all(
+      files.map(async (file) => ({
+        name: file.name,
+        rows: parseCsvText(await file.text()),
+      }))
+    );
+    const useHeader = Boolean(csvHeaderInput?.checked);
+    const merged = useHeader ? mergeCsvFilesByHeader(parsedFiles) : mergeCsvFilesByRows(parsedFiles);
+
+    csvState.fileNames = files.map((file) => file.name);
+    csvState.csvText = serializeCsvRows(merged.rows);
+    csvState.rowCount = merged.dataRowCount;
+    csvState.columnCount = merged.columnCount;
+    csvMeta.textContent = `${files.length}개 파일 · ${csvState.rowCount}개 행 · ${csvState.columnCount}개 컬럼`;
+    csvPreview.textContent = csvState.csvText.slice(0, 12000);
+    csvStatus.textContent = "CSV 파일을 하나로 합쳤습니다. 다운로드할 수 있습니다.";
+  } catch (error) {
+    csvState.fileNames = [];
+    csvState.csvText = "";
+    csvState.rowCount = 0;
+    csvState.columnCount = 0;
+    csvMeta.textContent = "합쳐진 CSV 데이터 일부가 여기에 표시됩니다.";
+    csvPreview.textContent = "CSV 파일 합치기에 실패했습니다.";
+    csvStatus.textContent = "CSV 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해 주세요.";
+  } finally {
+    updateCsvDownloadAvailability();
+  }
+}
+
+function mergeCsvFilesByHeader(parsedFiles) {
+  const headers = [];
+  const records = [];
+
+  parsedFiles.forEach((file) => {
+    const rows = file.rows.filter((row) => row.some((cell) => cell !== ""));
+    if (!rows.length) {
+      return;
+    }
+
+    const fileHeaders = rows[0].map((header, index) => header || `column_${index + 1}`);
+    fileHeaders.forEach((header) => {
+      if (!headers.includes(header)) {
+        headers.push(header);
+      }
+    });
+
+    rows.slice(1).forEach((row) => {
+      const record = {};
+      fileHeaders.forEach((header, index) => {
+        record[header] = row[index] ?? "";
+      });
+      records.push(record);
+    });
+  });
+
+  const mergedRows = [headers, ...records.map((record) => headers.map((header) => record[header] ?? ""))];
+  return {
+    rows: mergedRows,
+    dataRowCount: records.length,
+    columnCount: headers.length,
+  };
+}
+
+function mergeCsvFilesByRows(parsedFiles) {
+  const rows = parsedFiles.flatMap((file) => file.rows).filter((row) => row.some((cell) => cell !== ""));
+  const columnCount = rows.reduce((max, row) => Math.max(max, row.length), 0);
+  return {
+    rows,
+    dataRowCount: rows.length,
+    columnCount,
+  };
+}
+
+function parseCsvText(text) {
+  const csvText = String(text || "").replace(/^\uFEFF/, "");
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index];
+    const nextChar = csvText[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        cell += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        index += 1;
+      }
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    cell += char;
+  }
+
+  row.push(cell);
+  if (row.length > 1 || row[0] !== "") {
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function serializeCsvRows(rows) {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const value = String(cell ?? "");
+          return /[",\n\r]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
+        })
+        .join(",")
+    )
+    .join("\n");
+}
+
+function downloadMergedCsv() {
+  if (!csvState.csvText) {
+    return;
+  }
+
+  const blob = new Blob(["\uFEFF", csvState.csvText], {
+    type: "text/csv;charset=utf-8",
+  });
+  const downloadUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = downloadUrl;
+  anchor.download = "merged-csv.csv";
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
