@@ -29,6 +29,44 @@ const csvDownloadButton = document.getElementById("csvDownloadButton");
 const csvStatus = document.getElementById("csvStatus");
 const csvMeta = document.getElementById("csvMeta");
 const csvPreview = document.getElementById("csvPreview");
+const webpInput = document.getElementById("webpInput");
+const webpDropzone = document.getElementById("webpDropzone");
+const webpList = document.getElementById("webpList");
+const clearWebpButton = document.getElementById("clearWebpButton");
+const deleteSelectedWebpButton = document.getElementById("deleteSelectedWebpButton");
+const webpQualityInput = document.getElementById("webpQualityInput");
+const webpQualityLabel = document.getElementById("webpQualityLabel");
+const downloadSelectedWebpButton = document.getElementById("downloadSelectedWebpButton");
+const downloadWebpZipButton = document.getElementById("downloadWebpZipButton");
+const webpStatus = document.getElementById("webpStatus");
+const webpMeta = document.getElementById("webpMeta");
+const webpPreview = document.getElementById("webpPreview");
+const imageTextInput = document.getElementById("imageTextInput");
+const imageTextDropzone = document.getElementById("imageTextDropzone");
+const imageTextList = document.getElementById("imageTextList");
+const clearImageTextButton = document.getElementById("clearImageTextButton");
+const deleteSelectedImageTextButton = document.getElementById("deleteSelectedImageTextButton");
+const imageTextOriginalInput = document.getElementById("imageTextOriginalInput");
+const imageTextReplacementInput = document.getElementById("imageTextReplacementInput");
+const imageTextDeleteInput = document.getElementById("imageTextDeleteInput");
+const findImageTextButton = document.getElementById("findImageTextButton");
+const imageTextAutoDetectInput = document.getElementById("imageTextAutoDetectInput");
+const imageTextReflowInput = document.getElementById("imageTextReflowInput");
+const imageTextBoxXInput = document.getElementById("imageTextBoxXInput");
+const imageTextBoxYInput = document.getElementById("imageTextBoxYInput");
+const imageTextBoxWidthInput = document.getElementById("imageTextBoxWidthInput");
+const imageTextBoxHeightInput = document.getElementById("imageTextBoxHeightInput");
+const imageTextFontSizeInput = document.getElementById("imageTextFontSizeInput");
+const imageTextFontWeightInput = document.getElementById("imageTextFontWeightInput");
+const imageTextPaddingXInput = document.getElementById("imageTextPaddingXInput");
+const imageTextLetterSpacingInput = document.getElementById("imageTextLetterSpacingInput");
+const imageTextAlignInput = document.getElementById("imageTextAlignInput");
+const imageTextColorInput = document.getElementById("imageTextColorInput");
+const imageTextBackgroundInput = document.getElementById("imageTextBackgroundInput");
+const downloadImageTextZipButton = document.getElementById("downloadImageTextZipButton");
+const imageTextStatus = document.getElementById("imageTextStatus");
+const imageTextMeta = document.getElementById("imageTextMeta");
+const imageTextPreview = document.getElementById("imageTextPreview");
 const hotspotBackgroundInput = document.getElementById("hotspotBackgroundInput");
 const hotspotMobileBackgroundInput = document.getElementById("hotspotMobileBackgroundInput");
 const addHotspotSectionButton = document.getElementById("addHotspotSectionButton");
@@ -137,6 +175,36 @@ const csvState = {
   rowCount: 0,
   columnCount: 0,
 };
+const webpState = {
+  images: [],
+  selectedImageId: null,
+  quality: 0.9,
+};
+const imageTextState = {
+  images: [],
+  selectedImageId: null,
+  previewScale: 1,
+  ocrReady: false,
+  isFinding: false,
+  settings: {
+    originalText: "",
+    replacementText: "",
+    deleteText: "",
+    autoDetect: true,
+    reflowAfterDelete: true,
+    boxX: 40,
+    boxY: 40,
+    boxWidth: 320,
+    boxHeight: 84,
+    fontSize: 36,
+    fontWeight: "700",
+    paddingX: 18,
+    letterSpacing: 0,
+    align: "left",
+    textColor: "#111111",
+    backgroundColor: "#ffffff",
+  },
+};
 const hotspotState = {
   sections: [],
   selectedSectionId: null,
@@ -176,6 +244,7 @@ sliderState.selectedSliderId = sliderState.sliders[0].id;
 
 let dragState = null;
 let hotspotDragState = null;
+let imageTextDragState = null;
 
 videoInput.addEventListener("change", handleVideoUpload);
 iconInput.addEventListener("change", handleIconUpload);
@@ -185,6 +254,9 @@ resolutionSelect.addEventListener("change", updateResolutionHint);
 applySpacingButton.addEventListener("click", applySpacingSettings);
 deleteSelectedButton.addEventListener("click", removeSelectedIcon);
 document.addEventListener("keydown", handleSelectedIconDeleteShortcut);
+document.addEventListener("pointermove", handleImageTextPreviewPointerMove);
+document.addEventListener("pointerup", stopImageTextDrag);
+document.addEventListener("pointercancel", stopImageTextDrag);
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => switchTab(button.dataset.tabTarget));
 });
@@ -193,6 +265,51 @@ excelDownloadButton?.addEventListener("click", downloadExcelJson);
 csvMergeInput?.addEventListener("change", handleCsvMergeUpload);
 csvHeaderInput?.addEventListener("change", handleCsvMergeUpload);
 csvDownloadButton?.addEventListener("click", downloadMergedCsv);
+webpInput?.addEventListener("change", handleWebpUpload);
+webpDropzone?.addEventListener("click", () => webpInput?.click());
+webpDropzone?.addEventListener("dragenter", handleWebpDropzoneDragEnter);
+webpDropzone?.addEventListener("dragover", handleWebpDropzoneDragOver);
+webpDropzone?.addEventListener("dragleave", handleWebpDropzoneDragLeave);
+webpDropzone?.addEventListener("drop", handleWebpDropzoneDrop);
+webpList?.addEventListener("click", handleWebpListClick);
+clearWebpButton?.addEventListener("click", clearWebpImages);
+deleteSelectedWebpButton?.addEventListener("click", deleteSelectedWebp);
+webpQualityInput?.addEventListener("input", handleWebpQualityChange);
+downloadSelectedWebpButton?.addEventListener("click", downloadSelectedWebp);
+downloadWebpZipButton?.addEventListener("click", downloadWebpZip);
+imageTextInput?.addEventListener("change", handleImageTextUpload);
+imageTextDropzone?.addEventListener("click", () => imageTextInput?.click());
+imageTextDropzone?.addEventListener("dragenter", handleImageTextDropzoneDragEnter);
+imageTextDropzone?.addEventListener("dragover", handleImageTextDropzoneDragOver);
+imageTextDropzone?.addEventListener("dragleave", handleImageTextDropzoneDragLeave);
+imageTextDropzone?.addEventListener("drop", handleImageTextDropzoneDrop);
+imageTextList?.addEventListener("click", handleImageTextListClick);
+clearImageTextButton?.addEventListener("click", clearImageTextImages);
+deleteSelectedImageTextButton?.addEventListener("click", deleteSelectedImageText);
+findImageTextButton?.addEventListener("click", () => detectImageTextForSelection(true));
+[
+  imageTextOriginalInput,
+  imageTextReplacementInput,
+  imageTextDeleteInput,
+  imageTextAutoDetectInput,
+  imageTextReflowInput,
+  imageTextBoxXInput,
+  imageTextBoxYInput,
+  imageTextBoxWidthInput,
+  imageTextBoxHeightInput,
+  imageTextFontSizeInput,
+  imageTextFontWeightInput,
+  imageTextPaddingXInput,
+  imageTextLetterSpacingInput,
+  imageTextAlignInput,
+  imageTextColorInput,
+  imageTextBackgroundInput,
+].forEach((input) => {
+  input?.addEventListener("input", handleImageTextSettingsChange);
+  input?.addEventListener("change", handleImageTextSettingsChange);
+});
+imageTextPreview?.addEventListener("pointerdown", handleImageTextPreviewPointerDown);
+downloadImageTextZipButton?.addEventListener("click", downloadImageTextZip);
 hotspotBackgroundInput?.addEventListener("change", handleHotspotBackgroundUpload);
 hotspotMobileBackgroundInput?.addEventListener("change", handleHotspotMobileBackgroundUpload);
 addHotspotSectionButton?.addEventListener("click", addHotspotSection);
@@ -268,6 +385,8 @@ updateResolutionHint();
 updateSelectedDeleteButton();
 updateExcelDownloadAvailability();
 updateCsvDownloadAvailability();
+renderWebpTool();
+renderImageTextTool();
 initializeHotspotSections();
 updateHotspotControls();
 syncHotspotStages();
@@ -529,6 +648,34 @@ function switchTab(targetId) {
   toolScreens.forEach((screen) => {
     screen.classList.toggle("is-active", screen.id === targetId);
   });
+
+  if (targetId === "imageTextTool") {
+    requestAnimationFrame(() => {
+      try {
+        renderImageTextPreview();
+      } catch (error) {
+        console.error("imageTextTool render error", error);
+        if (imageTextStatus) {
+          imageTextStatus.textContent =
+            "이미지 텍스트 탭을 그리는 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.";
+        }
+      }
+    });
+  }
+
+  if (targetId === "webpTool") {
+    requestAnimationFrame(() => {
+      try {
+        renderWebpPreview();
+      } catch (error) {
+        console.error("webpTool render error", error);
+        if (webpStatus) {
+          webpStatus.textContent =
+            "WEBP 탭을 그리는 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.";
+        }
+      }
+    });
+  }
 }
 
 function createSliderItem(index = 1) {
@@ -2859,6 +3006,31 @@ function sanitizeExportFileName(name) {
   return cleaned || "asset";
 }
 
+function buildWebpFileName(name) {
+  const baseName = String(name || "image").replace(/\.[^.]+$/, "");
+  return `${sanitizeExportFileName(baseName)}.webp`;
+}
+
+function formatBytes(bytes) {
+  const size = Number(bytes) || 0;
+  if (size < 1024) {
+    return `${size}B`;
+  }
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1).replace(/\.0$/, "")}KB`;
+  }
+  return `${(size / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")}MB`;
+}
+
+function downloadBlob(blob, fileName) {
+  const downloadUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = downloadUrl;
+  anchor.download = fileName;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+}
+
 function createExportImageAsset(name, dataUrl) {
   return {
     name,
@@ -4159,6 +4331,1278 @@ function downloadMergedCsv() {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
 
+async function handleWebpUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  await addWebpFiles(files);
+  if (webpInput) {
+    webpInput.value = "";
+  }
+}
+
+function handleWebpDropzoneDragEnter(event) {
+  event.preventDefault();
+  webpDropzone?.classList.add("is-dragover");
+}
+
+function handleWebpDropzoneDragOver(event) {
+  event.preventDefault();
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "copy";
+  }
+  webpDropzone?.classList.add("is-dragover");
+}
+
+function handleWebpDropzoneDragLeave(event) {
+  if (!webpDropzone) {
+    return;
+  }
+  const relatedTarget = event.relatedTarget;
+  if (relatedTarget instanceof Node && webpDropzone.contains(relatedTarget)) {
+    return;
+  }
+  webpDropzone.classList.remove("is-dragover");
+}
+
+async function handleWebpDropzoneDrop(event) {
+  event.preventDefault();
+  webpDropzone?.classList.remove("is-dragover");
+  const files = Array.from(event.dataTransfer?.files ?? []);
+  await addWebpFiles(files);
+}
+
+async function addWebpFiles(files) {
+  const imageFiles = files.filter(
+    (file) =>
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      /\.(jpe?g|png)$/i.test(file.name)
+  );
+
+  if (!imageFiles.length) {
+    if (webpStatus) {
+      webpStatus.textContent = "JPG, JPEG, PNG 파일만 업로드할 수 있습니다.";
+    }
+    return;
+  }
+
+  const newItems = await Promise.all(
+    imageFiles.map(async (file) => {
+      const url = URL.createObjectURL(file);
+      const { naturalWidth, naturalHeight } = await loadImageDimensions(url);
+      return {
+        id: crypto.randomUUID(),
+        name: file.name,
+        url,
+        naturalWidth,
+        naturalHeight,
+        size: file.size,
+      };
+    })
+  );
+
+  webpState.images.push(...newItems);
+  webpState.selectedImageId = webpState.selectedImageId || newItems[0]?.id || null;
+  if (webpStatus) {
+    webpStatus.textContent = `${newItems.length}개의 이미지를 업로드했습니다.`;
+  }
+  renderWebpTool();
+}
+
+function handleWebpListClick(event) {
+  const deleteButton = event.target instanceof HTMLElement
+    ? event.target.closest("[data-delete-webp-id]")
+    : null;
+  if (deleteButton instanceof HTMLElement) {
+    deleteWebpById(deleteButton.dataset.deleteWebpId || "");
+    return;
+  }
+
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-webp-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  webpState.selectedImageId = button.dataset.webpId || webpState.selectedImageId;
+  renderWebpTool();
+}
+
+function clearWebpImages() {
+  webpState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  webpState.images = [];
+  webpState.selectedImageId = null;
+  if (webpStatus) {
+    webpStatus.textContent = "업로드한 JPG/PNG 이미지를 모두 삭제했습니다.";
+  }
+  renderWebpTool();
+}
+
+function deleteSelectedWebp() {
+  deleteWebpById(webpState.selectedImageId || "");
+}
+
+function deleteWebpById(imageId) {
+  const index = webpState.images.findIndex((image) => image.id === imageId);
+  if (index === -1) {
+    return;
+  }
+
+  const [removedImage] = webpState.images.splice(index, 1);
+  URL.revokeObjectURL(removedImage.url);
+
+  if (webpState.selectedImageId === imageId) {
+    const nextImage = webpState.images[index] || webpState.images[index - 1] || null;
+    webpState.selectedImageId = nextImage?.id ?? null;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = `${removedImage.name} 이미지를 삭제했습니다.`;
+  }
+  renderWebpTool();
+}
+
+function handleWebpQualityChange() {
+  const quality = clamp((Number(webpQualityInput?.value) || 90) / 100, 0.5, 1);
+  webpState.quality = quality;
+  syncWebpControls();
+  renderWebpPreview();
+  if (webpStatus) {
+    webpStatus.textContent = `현재 WEBP 품질을 ${Math.round(quality * 100)}로 설정했습니다.`;
+  }
+}
+
+function getSelectedWebpItem() {
+  return webpState.images.find((image) => image.id === webpState.selectedImageId) || null;
+}
+
+function syncWebpControls() {
+  const quality = Math.round(webpState.quality * 100);
+  if (webpQualityInput) {
+    webpQualityInput.value = String(quality);
+  }
+  if (webpQualityLabel) {
+    webpQualityLabel.textContent = `현재 품질: ${quality}`;
+  }
+}
+
+function updateWebpAvailability() {
+  const hasImages = webpState.images.length > 0;
+  const hasSelectedImage = Boolean(getSelectedWebpItem());
+  if (clearWebpButton) {
+    clearWebpButton.disabled = !hasImages;
+  }
+  if (deleteSelectedWebpButton) {
+    deleteSelectedWebpButton.disabled = !hasSelectedImage;
+  }
+  if (downloadSelectedWebpButton) {
+    downloadSelectedWebpButton.disabled = !hasSelectedImage;
+  }
+  if (downloadWebpZipButton) {
+    downloadWebpZipButton.disabled = !hasImages;
+  }
+}
+
+function renderWebpTool() {
+  renderWebpList();
+  syncWebpControls();
+  renderWebpPreview();
+  updateWebpAvailability();
+}
+
+function renderWebpList() {
+  if (!webpList) {
+    return;
+  }
+
+  webpList.innerHTML = webpState.images.length
+    ? webpState.images
+        .map(
+          (image) => `<div class="slider-list-item${
+            image.id === webpState.selectedImageId ? " is-active" : ""
+          }">
+            <button class="slider-list-item-main small-button" type="button" data-webp-id="${image.id}">
+              <span>${escapeHtml(image.name)}</span>
+            </button>
+            <button class="small-button" type="button" data-delete-webp-id="${image.id}">삭제</button>
+          </div>`
+        )
+        .join("")
+    : '<p class="empty-state">JPG/PNG 이미지를 업로드하면 목록이 여기에 표시됩니다.</p>';
+}
+
+function renderWebpPreview() {
+  if (!webpPreview) {
+    return;
+  }
+
+  const selectedImage = getSelectedWebpItem();
+  if (!selectedImage) {
+    webpPreview.className = "image-text-preview-empty";
+    webpPreview.textContent = "JPG/PNG 이미지를 업로드해 주세요.";
+    if (webpMeta) {
+      webpMeta.textContent = "JPG/PNG를 업로드하면 선택된 이미지 정보가 여기에 표시됩니다.";
+    }
+    return;
+  }
+
+  webpPreview.className = "image-text-preview-stage";
+  webpPreview.innerHTML = `<img class="image-text-preview-image" src="${selectedImage.url}" alt="${escapeHtml(
+    selectedImage.name
+  )}" />`;
+
+  if (webpMeta) {
+    webpMeta.textContent =
+      `${selectedImage.name} · ${selectedImage.naturalWidth} x ${selectedImage.naturalHeight}px · ` +
+      `${formatBytes(selectedImage.size)} · WEBP 품질 ${Math.round(webpState.quality * 100)}`;
+  }
+}
+
+async function downloadSelectedWebp() {
+  const image = getSelectedWebpItem();
+  if (!image) {
+    return;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = `${image.name} WEBP를 생성하는 중입니다...`;
+  }
+
+  try {
+    const blob = await convertImageToWebpBlob(image);
+    downloadBlob(blob, buildWebpFileName(image.name));
+    if (webpStatus) {
+      webpStatus.textContent = `${image.name} WEBP 다운로드를 시작했습니다.`;
+    }
+  } catch (error) {
+    console.error("downloadSelectedWebp error", error);
+    if (webpStatus) {
+      webpStatus.textContent = "WEBP 변환 중 오류가 발생했습니다. 브라우저 지원 여부를 확인해 주세요.";
+    }
+  }
+}
+
+async function downloadWebpZip() {
+  if (!webpState.images.length) {
+    return;
+  }
+
+  if (!window.JSZip) {
+    if (webpStatus) {
+      webpStatus.textContent = "ZIP 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.";
+    }
+    return;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = "WEBP ZIP 파일을 준비하는 중입니다...";
+  }
+
+  try {
+    const zip = new window.JSZip();
+
+    for (const image of webpState.images) {
+      if (webpStatus) {
+        webpStatus.textContent = `${image.name} WEBP를 생성하는 중입니다...`;
+      }
+      const blob = await convertImageToWebpBlob(image);
+      zip.file(buildWebpFileName(image.name), blob);
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    downloadBlob(zipBlob, "jpg-to-webp.zip");
+    if (webpStatus) {
+      webpStatus.textContent = `${webpState.images.length}개의 WEBP 파일을 ZIP으로 다운로드했습니다.`;
+    }
+  } catch (error) {
+    console.error("downloadWebpZip error", error);
+    if (webpStatus) {
+      webpStatus.textContent = "WEBP ZIP 생성 중 오류가 발생했습니다. 다시 시도해 주세요.";
+    }
+  }
+}
+
+async function convertImageToWebpBlob(image) {
+  const source = await loadImageElement(image.url);
+  const canvas = document.createElement("canvas");
+  canvas.width = source.naturalWidth;
+  canvas.height = source.naturalHeight;
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Canvas unavailable");
+  }
+
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(source, 0, 0);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("WEBP conversion failed"));
+        }
+      },
+      "image/webp",
+      webpState.quality
+    );
+  });
+}
+
+function handleImageTextUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  addImageTextFiles(files);
+  event.target.value = "";
+}
+
+function addImageTextFiles(files) {
+  if (!files.length) {
+    return;
+  }
+
+  const jpgFiles = files.filter((file) => /image\/jpeg|image\/jpg/i.test(file.type) || /\.jpe?g$/i.test(file.name));
+  if (!jpgFiles.length) {
+    imageTextStatus.textContent = "JPG 파일만 업로드할 수 있습니다.";
+    return;
+  }
+
+  jpgFiles.forEach((file) => {
+    const url = URL.createObjectURL(file);
+    imageTextState.images.push({
+      id: crypto.randomUUID(),
+      name: file.name,
+      url,
+      detectedBox: null,
+      detectedText: "",
+    });
+  });
+
+  if (!imageTextState.selectedImageId && imageTextState.images.length) {
+    imageTextState.selectedImageId = imageTextState.images[0].id;
+  }
+
+  imageTextStatus.textContent = `${jpgFiles.length}개 JPG를 추가했습니다. 위치와 문구를 맞춘 뒤 ZIP으로 저장할 수 있습니다.`;
+  renderImageTextTool();
+}
+
+function handleImageTextDropzoneDragEnter(event) {
+  event.preventDefault();
+  imageTextDropzone?.classList.add("is-dragover");
+}
+
+function handleImageTextDropzoneDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "copy";
+  imageTextDropzone?.classList.add("is-dragover");
+}
+
+function handleImageTextDropzoneDragLeave(event) {
+  if (!imageTextDropzone) {
+    return;
+  }
+  const relatedTarget = event.relatedTarget;
+  if (relatedTarget instanceof Node && imageTextDropzone.contains(relatedTarget)) {
+    return;
+  }
+  imageTextDropzone.classList.remove("is-dragover");
+}
+
+function handleImageTextDropzoneDrop(event) {
+  event.preventDefault();
+  imageTextDropzone?.classList.remove("is-dragover");
+  const files = Array.from(event.dataTransfer?.files ?? []);
+  addImageTextFiles(files);
+}
+
+function clearImageTextImages() {
+  imageTextState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  imageTextState.images = [];
+  imageTextState.selectedImageId = null;
+  imageTextStatus.textContent = "업로드한 JPG 이미지를 모두 삭제했습니다.";
+  renderImageTextTool();
+}
+
+function handleImageTextListClick(event) {
+  const deleteButton = event.target instanceof HTMLElement
+    ? event.target.closest("[data-delete-image-text-id]")
+    : null;
+  if (deleteButton instanceof HTMLElement) {
+    deleteImageTextById(deleteButton.dataset.deleteImageTextId || "");
+    return;
+  }
+
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-image-text-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  imageTextState.selectedImageId = button.dataset.imageTextId || imageTextState.selectedImageId;
+  renderImageTextTool();
+}
+
+function deleteSelectedImageText() {
+  deleteImageTextById(imageTextState.selectedImageId || "");
+}
+
+function deleteImageTextById(imageId) {
+  const index = imageTextState.images.findIndex((image) => image.id === imageId);
+  if (index === -1) {
+    return;
+  }
+
+  const [removedImage] = imageTextState.images.splice(index, 1);
+  URL.revokeObjectURL(removedImage.url);
+
+  if (imageTextState.selectedImageId === imageId) {
+    const nextImage = imageTextState.images[index] || imageTextState.images[index - 1] || null;
+    imageTextState.selectedImageId = nextImage?.id ?? null;
+  }
+
+  imageTextStatus.textContent = `${removedImage.name} 이미지를 삭제했습니다.`;
+  renderImageTextTool();
+}
+
+function handleImageTextSettingsChange(event) {
+  const selectedImage = getSelectedImageTextItem();
+  imageTextState.settings.originalText = imageTextOriginalInput?.value || "";
+  imageTextState.settings.replacementText = imageTextReplacementInput?.value || "";
+  imageTextState.settings.deleteText = imageTextDeleteInput?.value || "";
+  imageTextState.settings.autoDetect = Boolean(imageTextAutoDetectInput?.checked);
+  imageTextState.settings.reflowAfterDelete = Boolean(imageTextReflowInput?.checked);
+  imageTextState.settings.boxX = Math.max(0, Number(imageTextBoxXInput?.value) || 0);
+  imageTextState.settings.boxY = Math.max(0, Number(imageTextBoxYInput?.value) || 0);
+  imageTextState.settings.boxWidth = Math.max(1, Number(imageTextBoxWidthInput?.value) || 1);
+  imageTextState.settings.boxHeight = Math.max(1, Number(imageTextBoxHeightInput?.value) || 1);
+  imageTextState.settings.fontSize = Math.max(8, Number(imageTextFontSizeInput?.value) || 8);
+  imageTextState.settings.fontWeight = imageTextFontWeightInput?.value || "700";
+  imageTextState.settings.paddingX = Math.max(0, Number(imageTextPaddingXInput?.value) || 0);
+  imageTextState.settings.letterSpacing = Number(imageTextLetterSpacingInput?.value || 0);
+  imageTextState.settings.align = imageTextAlignInput?.value || "left";
+  imageTextState.settings.textColor = imageTextColorInput?.value || "#111111";
+  imageTextState.settings.backgroundColor = imageTextBackgroundInput?.value || "#ffffff";
+  const targetId = event?.target instanceof HTMLElement ? event.target.id : "";
+  if (
+    selectedImage &&
+    !imageTextState.isFinding &&
+    [
+      "imageTextOriginalInput",
+      "imageTextBoxXInput",
+      "imageTextBoxYInput",
+      "imageTextBoxWidthInput",
+      "imageTextBoxHeightInput",
+    ].includes(targetId)
+  ) {
+    selectedImage.detectedBox = null;
+  }
+  updateImageTextAvailability();
+  renderImageTextPreview();
+}
+
+function syncImageTextControls() {
+  const settings = imageTextState.settings;
+  if (imageTextOriginalInput) {
+    imageTextOriginalInput.value = settings.originalText;
+  }
+  if (imageTextReplacementInput) {
+    imageTextReplacementInput.value = settings.replacementText;
+  }
+  if (imageTextDeleteInput) {
+    imageTextDeleteInput.value = settings.deleteText;
+  }
+  if (imageTextAutoDetectInput) {
+    imageTextAutoDetectInput.checked = settings.autoDetect;
+  }
+  if (imageTextReflowInput) {
+    imageTextReflowInput.checked = settings.reflowAfterDelete;
+  }
+  if (imageTextBoxXInput) {
+    imageTextBoxXInput.value = String(Math.round(settings.boxX));
+  }
+  if (imageTextBoxYInput) {
+    imageTextBoxYInput.value = String(Math.round(settings.boxY));
+  }
+  if (imageTextBoxWidthInput) {
+    imageTextBoxWidthInput.value = String(Math.round(settings.boxWidth));
+  }
+  if (imageTextBoxHeightInput) {
+    imageTextBoxHeightInput.value = String(Math.round(settings.boxHeight));
+  }
+  if (imageTextFontSizeInput) {
+    imageTextFontSizeInput.value = String(Math.round(settings.fontSize));
+  }
+  if (imageTextFontWeightInput) {
+    imageTextFontWeightInput.value = settings.fontWeight;
+  }
+  if (imageTextPaddingXInput) {
+    imageTextPaddingXInput.value = String(Math.round(settings.paddingX));
+  }
+  if (imageTextLetterSpacingInput) {
+    imageTextLetterSpacingInput.value = String(settings.letterSpacing);
+  }
+  if (imageTextAlignInput) {
+    imageTextAlignInput.value = settings.align;
+  }
+  if (imageTextColorInput) {
+    imageTextColorInput.value = settings.textColor;
+  }
+  if (imageTextBackgroundInput) {
+    imageTextBackgroundInput.value = settings.backgroundColor;
+  }
+}
+
+function getSelectedImageTextItem() {
+  return imageTextState.images.find((image) => image.id === imageTextState.selectedImageId) || null;
+}
+
+function renderImageTextTool() {
+  renderImageTextList();
+  syncImageTextControls();
+  renderImageTextPreview();
+  updateImageTextAvailability();
+}
+
+function renderImageTextList() {
+  if (!imageTextList) {
+    return;
+  }
+
+  imageTextList.innerHTML = imageTextState.images.length
+    ? imageTextState.images
+        .map(
+          (image) => `<div class="slider-list-item${
+            image.id === imageTextState.selectedImageId ? " is-active" : ""
+          }">
+            <button class="slider-list-item-main small-button" type="button" data-image-text-id="${image.id}">
+              <span>${escapeHtml(image.name)}</span>
+            </button>
+            <button class="small-button" type="button" data-delete-image-text-id="${image.id}">삭제</button>
+          </div>`
+        )
+        .join("")
+    : '<p class="empty-state">JPG 이미지를 업로드하면 목록이 여기에 표시됩니다.</p>';
+}
+
+function renderImageTextPreview() {
+  if (!imageTextPreview) {
+    return;
+  }
+
+  const selectedImage = getSelectedImageTextItem();
+  if (!selectedImage) {
+    imageTextPreview.className = "image-text-preview-empty";
+    imageTextPreview.textContent = "JPG 이미지를 업로드해 주세요.";
+    imageTextMeta.textContent = "JPG를 업로드하면 현재 선택된 이미지 위에 교체 박스가 표시됩니다.";
+    imageTextState.previewScale = 1;
+    return;
+  }
+
+  const { settings } = imageTextState;
+  const resolvedSettings = getImageTextSettingsForImage(selectedImage);
+  const previewText = resolvedSettings.renderText || "";
+  const shouldShowPlaceholder =
+    !previewText &&
+    !String(settings.replacementText || "").trim() &&
+    !String(settings.deleteText || "").trim();
+  imageTextPreview.className = "image-text-preview-stage";
+  imageTextPreview.innerHTML = `
+    <img id="imageTextPreviewImage" class="image-text-preview-image" src="${selectedImage.url}" alt="${escapeHtml(
+      selectedImage.name
+    )}" />
+    <div
+      id="imageTextOverlayBox"
+      class="image-text-overlay-box"
+      style="
+        left: ${settings.boxX * imageTextState.previewScale}px;
+        top: ${settings.boxY * imageTextState.previewScale}px;
+        width: ${settings.boxWidth * imageTextState.previewScale}px;
+        height: ${settings.boxHeight * imageTextState.previewScale}px;
+        background: ${hexToRgba(settings.backgroundColor, 0.78)};
+      "
+    >
+      <div
+        class="image-text-overlay-content"
+        style="
+          justify-content: ${getImageTextJustifyContent(settings.align)};
+          padding: 0 ${settings.paddingX * imageTextState.previewScale}px;
+          color: ${settings.textColor};
+          font-size: ${settings.fontSize * imageTextState.previewScale}px;
+          font-weight: ${settings.fontWeight};
+          letter-spacing: ${resolvedSettings.effectiveLetterSpacing * imageTextState.previewScale}px;
+          text-align: ${settings.align};
+        "
+      >${escapeHtml(shouldShowPlaceholder ? "새 문구" : previewText)}</div>
+    </div>`;
+
+  const previewImage = imageTextPreview.querySelector("#imageTextPreviewImage");
+  if (previewImage instanceof HTMLImageElement) {
+    const updateScale = () => {
+      const renderedWidth = previewImage.clientWidth || previewImage.naturalWidth || 1;
+      const naturalWidth = previewImage.naturalWidth || renderedWidth || 1;
+      const nextScale = renderedWidth / naturalWidth;
+      if (Math.abs(nextScale - imageTextState.previewScale) > 0.001) {
+        imageTextState.previewScale = nextScale;
+        renderImageTextPreview();
+      }
+    };
+
+    if (previewImage.complete) {
+      const renderedWidth = previewImage.clientWidth || previewImage.naturalWidth || 1;
+      const naturalWidth = previewImage.naturalWidth || renderedWidth || 1;
+      const nextScale = renderedWidth / naturalWidth;
+      if (Math.abs(nextScale - imageTextState.previewScale) > 0.001) {
+        imageTextState.previewScale = nextScale;
+        requestAnimationFrame(() => renderImageTextPreview());
+        return;
+      }
+    } else {
+      previewImage.addEventListener("load", updateScale, { once: true });
+    }
+
+    imageTextMeta.textContent = `${selectedImage.name} · ${
+      previewImage.naturalWidth || "-"
+    } x ${previewImage.naturalHeight || "-"}px`;
+  }
+}
+
+function updateImageTextAvailability() {
+  const hasImages = imageTextState.images.length > 0;
+  const hasSelectedImage = Boolean(getSelectedImageTextItem());
+  if (clearImageTextButton) {
+    clearImageTextButton.disabled = !hasImages;
+  }
+  if (deleteSelectedImageTextButton) {
+    deleteSelectedImageTextButton.disabled = !hasSelectedImage;
+  }
+  if (downloadImageTextZipButton) {
+    downloadImageTextZipButton.disabled = !hasImages;
+  }
+  if (findImageTextButton) {
+    findImageTextButton.disabled = !hasImages || imageTextState.isFinding;
+  }
+}
+
+function handleImageTextPreviewPointerDown(event) {
+  const target = event.target instanceof HTMLElement ? event.target.closest("#imageTextOverlayBox") : null;
+  const selectedImage = getSelectedImageTextItem();
+  if (!(target instanceof HTMLElement) || !selectedImage) {
+    return;
+  }
+
+  imageTextDragState = {
+    startX: event.clientX,
+    startY: event.clientY,
+    boxX: imageTextState.settings.boxX,
+    boxY: imageTextState.settings.boxY,
+  };
+
+  target.setPointerCapture?.(event.pointerId);
+}
+
+function handleImageTextPreviewPointerMove(event) {
+  if (!imageTextDragState || !imageTextState.previewScale) {
+    return;
+  }
+
+  const dx = (event.clientX - imageTextDragState.startX) / imageTextState.previewScale;
+  const dy = (event.clientY - imageTextDragState.startY) / imageTextState.previewScale;
+  imageTextState.settings.boxX = Math.max(0, Math.round(imageTextDragState.boxX + dx));
+  imageTextState.settings.boxY = Math.max(0, Math.round(imageTextDragState.boxY + dy));
+  const selectedImage = getSelectedImageTextItem();
+  if (selectedImage) {
+    selectedImage.detectedBox = null;
+  }
+  syncImageTextControls();
+  renderImageTextPreview();
+}
+
+function stopImageTextDrag() {
+  imageTextDragState = null;
+}
+
+async function detectImageTextForSelection(showStatus = false) {
+  const selectedImage = getSelectedImageTextItem();
+  if (!selectedImage) {
+    if (showStatus && imageTextStatus) {
+      imageTextStatus.textContent = "먼저 JPG 이미지를 업로드해 주세요.";
+    }
+    return;
+  }
+
+  const targetText = normalizeDetectedText(imageTextState.settings.originalText);
+  if (!targetText) {
+    if (showStatus && imageTextStatus) {
+      imageTextStatus.textContent = "찾을 문구를 먼저 입력해 주세요.";
+    }
+    return;
+  }
+
+  imageTextState.isFinding = true;
+  updateImageTextAvailability();
+
+  if (showStatus) {
+    imageTextStatus.textContent = "현재 이미지에서 문구를 찾는 중입니다...";
+  }
+
+  try {
+    const detectedResult = await detectTextBoxForImage(selectedImage);
+    if (!detectedResult) {
+      if (showStatus) {
+        imageTextStatus.textContent =
+          "일치하는 문구를 찾지 못했습니다. 찾을 문구를 더 정확히 입력하거나 수동 박스를 사용해 주세요.";
+      }
+      return;
+    }
+
+    selectedImage.detectedBox = detectedResult.bbox;
+    selectedImage.detectedText = detectedResult.text || "";
+    applyDetectedTextBox(detectedResult.bbox);
+    if (showStatus) {
+      imageTextStatus.textContent = "문구 위치를 찾았습니다. 필요하면 박스를 조금만 보정해 주세요.";
+    }
+  } catch (error) {
+    console.error("detectImageTextForSelection error", error);
+    if (showStatus) {
+      imageTextStatus.textContent = formatImageTextErrorMessage(error);
+    }
+  } finally {
+    imageTextState.isFinding = false;
+    updateImageTextAvailability();
+  }
+}
+
+async function downloadImageTextZip() {
+  if (!imageTextState.images.length) {
+    return;
+  }
+
+  if (!window.JSZip) {
+    imageTextStatus.textContent = "ZIP 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.";
+    return;
+  }
+
+  imageTextStatus.textContent = "JPG를 생성하는 중입니다...";
+  const zip = new window.JSZip();
+
+  try {
+    for (const image of imageTextState.images) {
+      if (imageTextState.settings.autoDetect && imageTextState.settings.originalText.trim()) {
+        imageTextStatus.textContent = `${image.name} 문구를 찾는 중입니다...`;
+        const detectedResult = await detectTextBoxForImage(image);
+        if (detectedResult) {
+          image.detectedBox = detectedResult.bbox;
+          image.detectedText = detectedResult.text || "";
+        }
+      }
+
+      imageTextStatus.textContent = `${image.name} JPG를 생성하는 중입니다...`;
+      const blob = await renderImageTextBlob(image);
+      zip.file(sanitizeExportFileName(image.name), blob);
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const downloadUrl = URL.createObjectURL(zipBlob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = "image-text-modify.zip";
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    imageTextStatus.textContent = `${imageTextState.images.length}개 JPG를 ZIP으로 다운로드했습니다.`;
+  } catch (error) {
+    console.error("downloadImageTextZip error", error);
+    imageTextStatus.textContent = formatImageTextErrorMessage(error, "JPG 생성 중 오류");
+  }
+}
+
+async function renderImageTextBlob(image) {
+  const source = await loadImageElement(image.url);
+  const canvas = document.createElement("canvas");
+  canvas.width = source.naturalWidth;
+  canvas.height = source.naturalHeight;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas unavailable");
+  }
+
+  context.drawImage(source, 0, 0);
+  drawImageTextOverlay(
+    context,
+    getImageTextSettingsForImage(image),
+    canvas.width,
+    canvas.height
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Blob unavailable"));
+        }
+      },
+      "image/jpeg",
+      0.95
+    );
+  });
+}
+
+function drawImageTextOverlay(context, settings, imageWidth, imageHeight) {
+  const boxX = clamp(settings.boxX, 0, imageWidth);
+  const boxY = clamp(settings.boxY, 0, imageHeight);
+  const boxWidth = clamp(settings.boxWidth, 1, imageWidth - boxX);
+  const boxHeight = clamp(settings.boxHeight, 1, imageHeight - boxY);
+  const fontSize = Math.max(8, settings.fontSize);
+  const paddingX = Math.max(0, settings.paddingX);
+  const text = settings.renderText || settings.replacementText || "";
+
+  context.fillStyle = settings.backgroundColor;
+  context.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+  context.fillStyle = settings.textColor;
+  context.font = `${settings.fontWeight} ${fontSize}px Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif`;
+  context.textBaseline = "middle";
+
+  if (settings.align === "center") {
+    context.textAlign = "center";
+  } else if (settings.align === "right") {
+    context.textAlign = "right";
+  } else {
+    context.textAlign = "left";
+  }
+
+  const textX =
+    settings.align === "center"
+      ? boxX + boxWidth / 2
+      : settings.align === "right"
+        ? boxX + boxWidth - paddingX
+        : boxX + paddingX;
+  const textY = boxY + boxHeight / 2;
+  wrapCanvasText(
+    context,
+    text,
+    textX,
+    textY,
+    Math.max(boxWidth - paddingX * 2, 1),
+    fontSize * 1.25,
+    settings.effectiveLetterSpacing ?? settings.letterSpacing ?? 0
+  );
+}
+
+function getImageTextSettingsForImage(image) {
+  const detectedBox = image?.detectedBox;
+  const baseSettings = {
+    ...imageTextState.settings,
+    renderText: getImageTextRenderText(image, imageTextState.settings),
+    effectiveLetterSpacing: getImageTextEffectiveLetterSpacing(image, imageTextState.settings),
+  };
+  if (!detectedBox) {
+    return baseSettings;
+  }
+
+  return {
+    ...baseSettings,
+    boxX: detectedBox.x,
+    boxY: detectedBox.y,
+    boxWidth: detectedBox.width,
+    boxHeight: detectedBox.height,
+  };
+}
+
+function applyDetectedTextBox(detectedBox) {
+  imageTextState.settings.boxX = Math.round(detectedBox.x);
+  imageTextState.settings.boxY = Math.round(detectedBox.y);
+  imageTextState.settings.boxWidth = Math.round(detectedBox.width);
+  imageTextState.settings.boxHeight = Math.round(detectedBox.height);
+  syncImageTextControls();
+  renderImageTextPreview();
+}
+
+async function detectTextBoxForImage(image) {
+  const targetText = normalizeDetectedText(imageTextState.settings.originalText);
+  if (!targetText) {
+    return null;
+  }
+
+  const textCandidates = await recognizeImageTextCandidates(image.url);
+  if (!textCandidates.length) {
+    return null;
+  }
+
+  let bestMatch = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  textCandidates.forEach((candidate) => {
+    const normalized = normalizeDetectedText(candidate.text);
+    if (!normalized) {
+      return;
+    }
+
+    const score = getTextMatchScore(targetText, normalized);
+    if (score < bestScore) {
+      bestScore = score;
+      bestMatch = candidate;
+    }
+  });
+
+  if (!bestMatch) {
+    return null;
+  }
+
+  const threshold = Math.max(2, Math.floor(targetText.length * 0.45));
+  const shouldUseLineBox =
+    imageTextState.settings.reflowAfterDelete && String(imageTextState.settings.deleteText || "").trim();
+  return bestScore <= threshold
+    ? {
+        bbox: shouldUseLineBox && bestMatch.lineBbox ? bestMatch.lineBbox : bestMatch.bbox,
+        text: shouldUseLineBox && bestMatch.lineText ? bestMatch.lineText : bestMatch.text,
+      }
+    : null;
+}
+
+async function recognizeImageTextCandidates(imageUrl) {
+  await ensureTesseractReady();
+  const result = await window.Tesseract.recognize(imageUrl, "eng+kor", {
+    logger: (message) => {
+      if (!imageTextStatus || !imageTextState.isFinding) {
+        return;
+      }
+      if (message.status === "recognizing text" && typeof message.progress === "number") {
+        imageTextStatus.textContent = `문구를 찾는 중입니다... ${Math.round(message.progress * 100)}%`;
+      }
+    },
+  });
+
+  const candidates = [];
+  const lines = result.data?.lines || [];
+
+  lines.forEach((line) => {
+    const lineBbox = createBboxFromPoints(line.bbox);
+    const lineText = line.text || "";
+    const words = (line.words || []).filter((word) => String(word.text || "").trim());
+    if (!words.length) {
+      if (String(lineText).trim()) {
+        candidates.push({
+          text: lineText,
+          bbox: lineBbox,
+          lineText,
+          lineBbox,
+        });
+      }
+      return;
+    }
+
+    words.forEach((word) => {
+      candidates.push({
+        text: word.text || "",
+        bbox: createBboxFromPoints(word.bbox),
+        lineText,
+        lineBbox,
+      });
+    });
+
+    const maxWindowSize = Math.min(words.length, 6);
+    for (let size = 2; size <= maxWindowSize; size += 1) {
+      for (let start = 0; start <= words.length - size; start += 1) {
+        const group = words.slice(start, start + size);
+        candidates.push({
+          text: group.map((word) => word.text || "").join(" "),
+          bbox: mergeBboxes(group.map((word) => createBboxFromPoints(word.bbox))),
+          lineText,
+          lineBbox,
+        });
+      }
+    }
+  });
+
+  return candidates.filter((candidate) => candidate.text.trim());
+}
+
+async function ensureTesseractReady() {
+  if (window.Tesseract) {
+    imageTextState.ocrReady = true;
+    return;
+  }
+
+  throw new Error("Tesseract unavailable");
+}
+
+function formatImageTextErrorMessage(error, prefix = "문구 자동 탐색 오류") {
+  const message = String(error?.message || error || "").trim();
+
+  if (!message) {
+    return `${prefix}: 알 수 없는 오류가 발생했습니다.`;
+  }
+
+  if (/tesseract unavailable/i.test(message)) {
+    return `${prefix}: OCR 라이브러리를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.`;
+  }
+
+  if (/failed to fetch|networkerror|load failed/i.test(message)) {
+    return `${prefix}: 네트워크 요청이 실패했습니다. 인터넷 연결 또는 브라우저 차단 설정을 확인해 주세요.`;
+  }
+
+  if (/language|traineddata|worker/i.test(message)) {
+    return `${prefix}: OCR 언어 데이터 로드에 실패했습니다. 네트워크 상태를 확인해 주세요.`;
+  }
+
+  return `${prefix}: ${message}`;
+}
+
+function normalizeDetectedText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+function createBboxFromPoints(bbox) {
+  const x0 = bbox?.x0 ?? 0;
+  const y0 = bbox?.y0 ?? 0;
+  const x1 = bbox?.x1 ?? x0;
+  const y1 = bbox?.y1 ?? y0;
+  return {
+    x: x0,
+    y: y0,
+    width: Math.max(x1 - x0, 1),
+    height: Math.max(y1 - y0, 1),
+  };
+}
+
+function mergeBboxes(boxes) {
+  const validBoxes = boxes.filter(Boolean);
+  if (!validBoxes.length) {
+    return { x: 0, y: 0, width: 1, height: 1 };
+  }
+
+  const minX = Math.min(...validBoxes.map((box) => box.x));
+  const minY = Math.min(...validBoxes.map((box) => box.y));
+  const maxX = Math.max(...validBoxes.map((box) => box.x + box.width));
+  const maxY = Math.max(...validBoxes.map((box) => box.y + box.height));
+
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(maxX - minX, 1),
+    height: Math.max(maxY - minY, 1),
+  };
+}
+
+function getImageTextRenderText(image, settings) {
+  const manualReplacement = String(settings.replacementText || "");
+  if (manualReplacement.trim()) {
+    return manualReplacement;
+  }
+
+  if (!settings.reflowAfterDelete) {
+    return manualReplacement;
+  }
+
+  const detectedText = String(image?.detectedText || "").trim();
+  const deleteText = String(settings.deleteText || "").trim();
+  if (!detectedText || !deleteText) {
+    return detectedText;
+  }
+
+  return removeMatchedText(detectedText, deleteText);
+}
+
+function getImageTextEffectiveLetterSpacing(image, settings) {
+  const baseSpacing = Number(settings.letterSpacing || 0);
+  const manualReplacement = String(settings.replacementText || "").trim();
+  if (manualReplacement) {
+    return baseSpacing;
+  }
+
+  if (!settings.reflowAfterDelete) {
+    return baseSpacing;
+  }
+
+  const originalText = String(image?.detectedText || "").trim();
+  const renderText = getImageTextRenderText(image, settings);
+  const deleteText = String(settings.deleteText || "").trim();
+  const renderChars = Array.from(String(renderText || ""));
+
+  if (!originalText || !deleteText || renderChars.length <= 1) {
+    return baseSpacing;
+  }
+
+  const measureContext = document.createElement("canvas").getContext("2d");
+  if (!measureContext) {
+    return baseSpacing;
+  }
+
+  measureContext.font = `${settings.fontWeight} ${Math.max(
+    8,
+    settings.fontSize
+  )}px Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif`;
+
+  const originalWidth = measureCanvasTextWidth(measureContext, originalText, baseSpacing);
+  const currentWidth = measureCanvasTextWidth(measureContext, renderText, baseSpacing);
+  const widthGap = Math.max(originalWidth - currentWidth, 0);
+  if (widthGap <= 0) {
+    return baseSpacing;
+  }
+
+  const tighterSpacing = baseSpacing - widthGap / Math.max(renderChars.length - 1, 1);
+  return Math.max(tighterSpacing, -Math.max(settings.fontSize * 0.08, 6));
+}
+
+function removeMatchedText(sourceText, deleteText) {
+  if (!deleteText.trim()) {
+    return sourceText;
+  }
+
+  const escapedDelete = deleteText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const removed = sourceText.replace(new RegExp(escapedDelete, "ig"), " ");
+  return removed.replace(/\s+/g, " ").trim();
+}
+
+function getTextMatchScore(target, candidate) {
+  if (target === candidate) {
+    return 0;
+  }
+  if (candidate.includes(target) || target.includes(candidate)) {
+    return Math.abs(target.length - candidate.length);
+  }
+  return levenshteinDistance(target, candidate);
+}
+
+function levenshteinDistance(source, target) {
+  const rows = source.length + 1;
+  const cols = target.length + 1;
+  const matrix = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    matrix[row][0] = row;
+  }
+  for (let col = 0; col < cols; col += 1) {
+    matrix[0][col] = col;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      const cost = source[row - 1] === target[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost
+      );
+    }
+  }
+
+  return matrix[rows - 1][cols - 1];
+}
+
+function wrapCanvasText(context, text, x, centerY, maxWidth, lineHeight, letterSpacing = 0) {
+  const lines = String(text || "")
+    .split("\n")
+    .flatMap((part) => splitCanvasTextLine(context, part, maxWidth, letterSpacing));
+  const totalHeight = lineHeight * Math.max(lines.length, 1);
+  let startY = centerY - totalHeight / 2 + lineHeight / 2;
+
+  if (!lines.length) {
+    context.fillText("", x, centerY);
+    return;
+  }
+
+  lines.forEach((line) => {
+    drawCanvasTextLine(context, line, x, startY, letterSpacing);
+    startY += lineHeight;
+  });
+}
+
+function splitCanvasTextLine(context, text, maxWidth, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  const lines = [];
+  let current = "";
+
+  characters.forEach((character) => {
+    const candidate = current + character;
+    if (current && measureCanvasTextWidth(context, candidate, letterSpacing) > maxWidth) {
+      lines.push(current);
+      current = character;
+    } else {
+      current = candidate;
+    }
+  });
+
+  if (current || !lines.length) {
+    lines.push(current);
+  }
+
+  return lines;
+}
+
+function measureCanvasTextWidth(context, text, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  if (!characters.length) {
+    return 0;
+  }
+
+  const glyphWidth = characters.reduce((total, character) => total + context.measureText(character).width, 0);
+  return glyphWidth + Math.max(characters.length - 1, 0) * letterSpacing;
+}
+
+function drawCanvasTextLine(context, text, x, y, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  if (!characters.length || letterSpacing === 0) {
+    context.fillText(text, x, y);
+    return;
+  }
+
+  const originalTextAlign = context.textAlign;
+  const totalWidth = measureCanvasTextWidth(context, text, letterSpacing);
+  let cursorX = x;
+  if (originalTextAlign === "center") {
+    cursorX = x - totalWidth / 2;
+  } else if (originalTextAlign === "right") {
+    cursorX = x - totalWidth;
+  }
+
+  characters.forEach((character, index) => {
+    context.textAlign = "left";
+    context.fillText(character, cursorX, y);
+    cursorX += context.measureText(character).width;
+    if (index < characters.length - 1) {
+      cursorX += letterSpacing;
+    }
+  });
+  context.textAlign = originalTextAlign;
+}
+
+function getImageTextJustifyContent(align) {
+  if (align === "center") {
+    return "center";
+  }
+  if (align === "right") {
+    return "flex-end";
+  }
+  return "flex-start";
+}
+
+function hexToRgba(hex, alpha = 1) {
+  const value = hex.replace("#", "");
+  const normalized = value.length === 3 ? value.split("").map((char) => char + char).join("") : value;
+  const red = Number.parseInt(normalized.slice(0, 2), 16);
+  const green = Number.parseInt(normalized.slice(2, 4), 16);
+  const blue = Number.parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function loadImageElement(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
 function getSafeExportSettings(requestedScale) {
   const safeRequestedScale =
     Number.isFinite(requestedScale) && requestedScale > 0 ? requestedScale : 1;
@@ -4186,8 +5630,4 @@ function getSafeExportSettings(requestedScale) {
     outputHeight: Math.round(state.videoHeight * outputScale),
     capped: outputScale < safeRequestedScale,
   };
-}
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
 }

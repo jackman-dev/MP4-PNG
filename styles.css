@@ -27,7 +27,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -62,6 +63,11 @@ select {
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
   min-height: 100vh;
+}
+
+.text-tool-shell {
+  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
 }
 
 .sidebar {
@@ -124,6 +130,24 @@ input[type="file"] {
   margin-bottom: 10px;
 }
 
+.file-dropzone {
+  display: grid;
+  min-height: 92px;
+  margin-bottom: 12px;
+  place-items: center;
+  border: 1px dashed rgba(255, 203, 0, 0.45);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  text-align: center;
+}
+
+.file-dropzone.is-dragover {
+  border-color: #ffcb00;
+  background: rgba(255, 203, 0, 0.08);
+  color: #ffcb00;
+}
+
 .resolution-select {
   width: 100%;
   margin-bottom: 10px;
@@ -146,6 +170,11 @@ input[type="file"] {
 
 .text-input {
   margin-bottom: 12px;
+}
+
+textarea.number-input {
+  resize: vertical;
+  min-height: 84px;
 }
 
 .slider-option-grid {
@@ -187,6 +216,19 @@ input[type="file"] {
   text-align: left;
 }
 
+.slider-list-item-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.slider-list-item-main.small-button {
+  width: auto;
+  justify-content: flex-start;
+  text-align: left;
+  background: transparent;
+  padding: 0;
+}
+
 .slider-list-item.is-active {
   border-color: #ffcb00;
   color: #ffcb00;
@@ -201,6 +243,61 @@ input[type="file"] {
 .slider-list-item small {
   flex: 0 0 auto;
   color: var(--muted);
+}
+
+.slider-list-item .small-button {
+  flex: 0 0 auto;
+}
+
+.image-text-preview-empty {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.image-text-preview-stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  background: #050505;
+}
+
+.image-text-preview-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.image-text-overlay-box {
+  position: absolute;
+  border: 2px solid #ffcb00;
+  background: rgba(255, 203, 0, 0.12);
+  cursor: move;
+  overflow: hidden;
+}
+
+.image-text-overlay-box::after {
+  content: "TEXT";
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: #ffcb00;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.image-text-overlay-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.25;
+  pointer-events: none;
 }
 
 .toggle-field {
@@ -317,6 +414,26 @@ button:disabled {
   flex-direction: column;
   min-width: 0;
   padding: 24px;
+}
+
+.text-tool-shell .sidebar,
+.text-tool-shell .workspace {
+  min-height: 0;
+  height: 100%;
+}
+
+.text-tool-shell .sidebar {
+  overflow: auto;
+}
+
+.text-tool-shell .workspace {
+  overflow: hidden;
+}
+
+.text-tool-shell .slider-preview-card {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .workspace-header {
