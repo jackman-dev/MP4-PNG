@@ -23,6 +23,50 @@ const excelDownloadButton = document.getElementById("excelDownloadButton");
 const excelStatus = document.getElementById("excelStatus");
 const excelMeta = document.getElementById("excelMeta");
 const excelPreview = document.getElementById("excelPreview");
+const csvMergeInput = document.getElementById("csvMergeInput");
+const csvHeaderInput = document.getElementById("csvHeaderInput");
+const csvDownloadButton = document.getElementById("csvDownloadButton");
+const csvStatus = document.getElementById("csvStatus");
+const csvMeta = document.getElementById("csvMeta");
+const csvPreview = document.getElementById("csvPreview");
+const webpInput = document.getElementById("webpInput");
+const webpDropzone = document.getElementById("webpDropzone");
+const webpList = document.getElementById("webpList");
+const clearWebpButton = document.getElementById("clearWebpButton");
+const deleteSelectedWebpButton = document.getElementById("deleteSelectedWebpButton");
+const webpQualityInput = document.getElementById("webpQualityInput");
+const webpQualityLabel = document.getElementById("webpQualityLabel");
+const downloadSelectedWebpButton = document.getElementById("downloadSelectedWebpButton");
+const downloadWebpZipButton = document.getElementById("downloadWebpZipButton");
+const webpStatus = document.getElementById("webpStatus");
+const webpMeta = document.getElementById("webpMeta");
+const webpPreview = document.getElementById("webpPreview");
+const imageTextInput = document.getElementById("imageTextInput");
+const imageTextDropzone = document.getElementById("imageTextDropzone");
+const imageTextList = document.getElementById("imageTextList");
+const clearImageTextButton = document.getElementById("clearImageTextButton");
+const deleteSelectedImageTextButton = document.getElementById("deleteSelectedImageTextButton");
+const imageTextOriginalInput = document.getElementById("imageTextOriginalInput");
+const imageTextReplacementInput = document.getElementById("imageTextReplacementInput");
+const imageTextDeleteInput = document.getElementById("imageTextDeleteInput");
+const findImageTextButton = document.getElementById("findImageTextButton");
+const imageTextAutoDetectInput = document.getElementById("imageTextAutoDetectInput");
+const imageTextReflowInput = document.getElementById("imageTextReflowInput");
+const imageTextBoxXInput = document.getElementById("imageTextBoxXInput");
+const imageTextBoxYInput = document.getElementById("imageTextBoxYInput");
+const imageTextBoxWidthInput = document.getElementById("imageTextBoxWidthInput");
+const imageTextBoxHeightInput = document.getElementById("imageTextBoxHeightInput");
+const imageTextFontSizeInput = document.getElementById("imageTextFontSizeInput");
+const imageTextFontWeightInput = document.getElementById("imageTextFontWeightInput");
+const imageTextPaddingXInput = document.getElementById("imageTextPaddingXInput");
+const imageTextLetterSpacingInput = document.getElementById("imageTextLetterSpacingInput");
+const imageTextAlignInput = document.getElementById("imageTextAlignInput");
+const imageTextColorInput = document.getElementById("imageTextColorInput");
+const imageTextBackgroundInput = document.getElementById("imageTextBackgroundInput");
+const downloadImageTextZipButton = document.getElementById("downloadImageTextZipButton");
+const imageTextStatus = document.getElementById("imageTextStatus");
+const imageTextMeta = document.getElementById("imageTextMeta");
+const imageTextPreview = document.getElementById("imageTextPreview");
 const hotspotBackgroundInput = document.getElementById("hotspotBackgroundInput");
 const hotspotMobileBackgroundInput = document.getElementById("hotspotMobileBackgroundInput");
 const addHotspotSectionButton = document.getElementById("addHotspotSectionButton");
@@ -73,6 +117,36 @@ const downloadHotspotMobileJsButton = document.getElementById(
   "downloadHotspotMobileJsButton"
 );
 const downloadHotspotZipButton = document.getElementById("downloadHotspotZipButton");
+const sliderList = document.getElementById("sliderList");
+const addSliderButton = document.getElementById("addSliderButton");
+const deleteSliderButton = document.getElementById("deleteSliderButton");
+const sliderImageInput = document.getElementById("sliderImageInput");
+const clearSliderImagesButton = document.getElementById("clearSliderImagesButton");
+const sliderNameInput = document.getElementById("sliderNameInput");
+const sliderSwiperPresetInput = document.getElementById("sliderSwiperPresetInput");
+const sliderSlidesPerViewInput = document.getElementById("sliderSlidesPerViewInput");
+const sliderSpaceBetweenInput = document.getElementById("sliderSpaceBetweenInput");
+const sliderSpeedInput = document.getElementById("sliderSpeedInput");
+const sliderIntervalInput = document.getElementById("sliderIntervalInput");
+const sliderDirectionInput = document.getElementById("sliderDirectionInput");
+const sliderPaginationInput = document.getElementById("sliderPaginationInput");
+const sliderAutoplayOptionInput = document.getElementById("sliderAutoplayOptionInput");
+const sliderLoopOptionInput = document.getElementById("sliderLoopOptionInput");
+const sliderArrowsOptionInput = document.getElementById("sliderArrowsOptionInput");
+const sliderCenteredOptionInput = document.getElementById("sliderCenteredOptionInput");
+const sliderPreview = document.getElementById("sliderPreview");
+const sliderStatus = document.getElementById("sliderStatus");
+const sliderMeta = document.getElementById("sliderMeta");
+const sliderHtmlCode = document.getElementById("sliderHtmlCode");
+const sliderCssCode = document.getElementById("sliderCssCode");
+const sliderJsCode = document.getElementById("sliderJsCode");
+const copySliderHtmlButton = document.getElementById("copySliderHtmlButton");
+const copySliderCssButton = document.getElementById("copySliderCssButton");
+const copySliderJsButton = document.getElementById("copySliderJsButton");
+const copySliderAllButton = document.getElementById("copySliderAllButton");
+const copySliderHtmlInlineButton = document.getElementById("copySliderHtmlInlineButton");
+const copySliderCssInlineButton = document.getElementById("copySliderCssInlineButton");
+const copySliderJsInlineButton = document.getElementById("copySliderJsInlineButton");
 
 const SIZE_PRESETS = [0.8, 1, 1.35, 1.7];
 const DEFAULT_SIZE_LEVEL = 4;
@@ -95,13 +169,82 @@ const excelState = {
   fileName: "",
   data: null,
 };
+const csvState = {
+  fileNames: [],
+  csvText: "",
+  rowCount: 0,
+  columnCount: 0,
+};
+const webpState = {
+  images: [],
+  selectedImageId: null,
+  quality: 0.9,
+};
+const imageTextState = {
+  images: [],
+  selectedImageId: null,
+  previewScale: 1,
+  ocrReady: false,
+  isFinding: false,
+  settings: {
+    originalText: "",
+    replacementText: "",
+    deleteText: "",
+    autoDetect: true,
+    reflowAfterDelete: true,
+    boxX: 40,
+    boxY: 40,
+    boxWidth: 320,
+    boxHeight: 84,
+    fontSize: 36,
+    fontWeight: "700",
+    paddingX: 18,
+    letterSpacing: 0,
+    align: "left",
+    textColor: "#111111",
+    backgroundColor: "#ffffff",
+  },
+};
 const hotspotState = {
   sections: [],
   selectedSectionId: null,
 };
+const sliderState = {
+  sliders: [createSliderItem(1)],
+  selectedSliderId: null,
+  timerId: null,
+  generated: {
+    html: "",
+    css: "",
+    js: "",
+  },
+  previewSwiper: null,
+  isLoadingSliderControls: false,
+  get activeSlider() {
+    return this.sliders.find((slider) => slider.id === this.selectedSliderId) || this.sliders[0];
+  },
+  get images() {
+    return this.activeSlider?.images ?? [];
+  },
+  set images(value) {
+    if (this.activeSlider) {
+      this.activeSlider.images = value;
+    }
+  },
+  get currentIndex() {
+    return this.activeSlider?.currentIndex ?? 0;
+  },
+  set currentIndex(value) {
+    if (this.activeSlider) {
+      this.activeSlider.currentIndex = value;
+    }
+  },
+};
+sliderState.selectedSliderId = sliderState.sliders[0].id;
 
 let dragState = null;
 let hotspotDragState = null;
+let imageTextDragState = null;
 
 videoInput.addEventListener("change", handleVideoUpload);
 iconInput.addEventListener("change", handleIconUpload);
@@ -111,11 +254,62 @@ resolutionSelect.addEventListener("change", updateResolutionHint);
 applySpacingButton.addEventListener("click", applySpacingSettings);
 deleteSelectedButton.addEventListener("click", removeSelectedIcon);
 document.addEventListener("keydown", handleSelectedIconDeleteShortcut);
+document.addEventListener("pointermove", handleImageTextPreviewPointerMove);
+document.addEventListener("pointerup", stopImageTextDrag);
+document.addEventListener("pointercancel", stopImageTextDrag);
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => switchTab(button.dataset.tabTarget));
 });
 excelInput?.addEventListener("change", handleExcelUpload);
 excelDownloadButton?.addEventListener("click", downloadExcelJson);
+csvMergeInput?.addEventListener("change", handleCsvMergeUpload);
+csvHeaderInput?.addEventListener("change", handleCsvMergeUpload);
+csvDownloadButton?.addEventListener("click", downloadMergedCsv);
+webpInput?.addEventListener("change", handleWebpUpload);
+webpDropzone?.addEventListener("click", () => webpInput?.click());
+webpDropzone?.addEventListener("dragenter", handleWebpDropzoneDragEnter);
+webpDropzone?.addEventListener("dragover", handleWebpDropzoneDragOver);
+webpDropzone?.addEventListener("dragleave", handleWebpDropzoneDragLeave);
+webpDropzone?.addEventListener("drop", handleWebpDropzoneDrop);
+webpList?.addEventListener("click", handleWebpListClick);
+clearWebpButton?.addEventListener("click", clearWebpImages);
+deleteSelectedWebpButton?.addEventListener("click", deleteSelectedWebp);
+webpQualityInput?.addEventListener("input", handleWebpQualityChange);
+downloadSelectedWebpButton?.addEventListener("click", downloadSelectedWebp);
+downloadWebpZipButton?.addEventListener("click", downloadWebpZip);
+imageTextInput?.addEventListener("change", handleImageTextUpload);
+imageTextDropzone?.addEventListener("click", () => imageTextInput?.click());
+imageTextDropzone?.addEventListener("dragenter", handleImageTextDropzoneDragEnter);
+imageTextDropzone?.addEventListener("dragover", handleImageTextDropzoneDragOver);
+imageTextDropzone?.addEventListener("dragleave", handleImageTextDropzoneDragLeave);
+imageTextDropzone?.addEventListener("drop", handleImageTextDropzoneDrop);
+imageTextList?.addEventListener("click", handleImageTextListClick);
+clearImageTextButton?.addEventListener("click", clearImageTextImages);
+deleteSelectedImageTextButton?.addEventListener("click", deleteSelectedImageText);
+findImageTextButton?.addEventListener("click", () => detectImageTextForSelection(true));
+[
+  imageTextOriginalInput,
+  imageTextReplacementInput,
+  imageTextDeleteInput,
+  imageTextAutoDetectInput,
+  imageTextReflowInput,
+  imageTextBoxXInput,
+  imageTextBoxYInput,
+  imageTextBoxWidthInput,
+  imageTextBoxHeightInput,
+  imageTextFontSizeInput,
+  imageTextFontWeightInput,
+  imageTextPaddingXInput,
+  imageTextLetterSpacingInput,
+  imageTextAlignInput,
+  imageTextColorInput,
+  imageTextBackgroundInput,
+].forEach((input) => {
+  input?.addEventListener("input", handleImageTextSettingsChange);
+  input?.addEventListener("change", handleImageTextSettingsChange);
+});
+imageTextPreview?.addEventListener("pointerdown", handleImageTextPreviewPointerDown);
+downloadImageTextZipButton?.addEventListener("click", downloadImageTextZip);
 hotspotBackgroundInput?.addEventListener("change", handleHotspotBackgroundUpload);
 hotspotMobileBackgroundInput?.addEventListener("change", handleHotspotMobileBackgroundUpload);
 addHotspotSectionButton?.addEventListener("click", addHotspotSection);
@@ -154,16 +348,51 @@ downloadHotspotMobileJsButton?.addEventListener("click", () =>
   downloadHotspotAsset("mobile", "js")
 );
 downloadHotspotZipButton?.addEventListener("click", downloadHotspotZip);
+sliderList?.addEventListener("click", handleSliderListClick);
+addSliderButton?.addEventListener("click", addSliderItem);
+deleteSliderButton?.addEventListener("click", deleteSelectedSliderItem);
+sliderImageInput?.addEventListener("change", handleSliderImageUpload);
+clearSliderImagesButton?.addEventListener("click", clearSliderImages);
+sliderNameInput?.addEventListener("input", updateSliderBuilder);
+sliderSwiperPresetInput?.addEventListener("change", handleSliderPresetChange);
+[
+  sliderSlidesPerViewInput,
+  sliderSpaceBetweenInput,
+  sliderSpeedInput,
+  sliderIntervalInput,
+  sliderDirectionInput,
+  sliderPaginationInput,
+  sliderAutoplayOptionInput,
+  sliderLoopOptionInput,
+  sliderArrowsOptionInput,
+  sliderCenteredOptionInput,
+].forEach((input) => {
+  input?.addEventListener("input", updateSliderBuilder);
+  input?.addEventListener("change", updateSliderBuilder);
+});
+sliderPreview?.addEventListener("click", handleSliderPreviewClick);
+copySliderHtmlButton?.addEventListener("click", () => copySliderSource("html"));
+copySliderCssButton?.addEventListener("click", () => copySliderSource("css"));
+copySliderJsButton?.addEventListener("click", () => copySliderSource("js"));
+copySliderAllButton?.addEventListener("click", copyAllSliderSource);
+copySliderHtmlInlineButton?.addEventListener("click", () => copySliderSource("html"));
+copySliderCssInlineButton?.addEventListener("click", () => copySliderSource("css"));
+copySliderJsInlineButton?.addEventListener("click", () => copySliderSource("js"));
 
 renderIcons();
 renderLayerList();
 updateResolutionHint();
 updateSelectedDeleteButton();
 updateExcelDownloadAvailability();
+updateCsvDownloadAvailability();
+renderWebpTool();
+renderImageTextTool();
 initializeHotspotSections();
 updateHotspotControls();
 syncHotspotStages();
 renderHotspots();
+loadActiveSliderControls();
+updateSliderBuilder();
 
 function handleVideoUpload(event) {
   const [file] = event.target.files ?? [];
@@ -419,6 +648,1658 @@ function switchTab(targetId) {
   toolScreens.forEach((screen) => {
     screen.classList.toggle("is-active", screen.id === targetId);
   });
+
+  if (targetId === "imageTextTool") {
+    requestAnimationFrame(() => {
+      try {
+        renderImageTextPreview();
+      } catch (error) {
+        console.error("imageTextTool render error", error);
+        if (imageTextStatus) {
+          imageTextStatus.textContent =
+            "이미지 텍스트 탭을 그리는 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.";
+        }
+      }
+    });
+  }
+
+  if (targetId === "webpTool") {
+    requestAnimationFrame(() => {
+      try {
+        renderWebpPreview();
+      } catch (error) {
+        console.error("webpTool render error", error);
+        if (webpStatus) {
+          webpStatus.textContent =
+            "WEBP 탭을 그리는 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.";
+        }
+      }
+    });
+  }
+}
+
+function createSliderItem(index = 1) {
+  const presetConfig = getBaseSwiperPresetConfig("basic");
+  return {
+    id: crypto.randomUUID(),
+    className: index === 1 ? "promo-slider" : `promo-slider-${index}`,
+    preset: "basic",
+    images: [],
+    currentIndex: 0,
+    options: {
+      slidesPerView: String(presetConfig.slidesPerView),
+      spaceBetween: String(presetConfig.spaceBetween),
+      speed: String(presetConfig.speed),
+      interval: String(presetConfig.interval),
+      direction: presetConfig.direction,
+      pagination: presetConfig.navigationType,
+      autoplay: presetConfig.autoplay,
+      loop: presetConfig.loop,
+      arrows: presetConfig.arrows,
+      centered: presetConfig.centeredSlides,
+    },
+  };
+}
+
+function getActiveSliderItem() {
+  return sliderState.activeSlider;
+}
+
+function saveActiveSliderControls() {
+  if (sliderState.isLoadingSliderControls) {
+    return;
+  }
+
+  const slider = getActiveSliderItem();
+  if (!slider) {
+    return;
+  }
+
+  slider.className = getSliderClassName();
+  slider.preset = getSliderSwiperPreset();
+  slider.options = {
+    slidesPerView: sliderSlidesPerViewInput?.value || "1",
+    spaceBetween: sliderSpaceBetweenInput?.value || "0",
+    speed: sliderSpeedInput?.value || "420",
+    interval: sliderIntervalInput?.value || "3000",
+    direction: sliderDirectionInput?.value || "horizontal",
+    pagination: sliderPaginationInput?.value || "none",
+    autoplay: Boolean(sliderAutoplayOptionInput?.checked),
+    loop: Boolean(sliderLoopOptionInput?.checked),
+    arrows: Boolean(sliderArrowsOptionInput?.checked),
+    centered: Boolean(sliderCenteredOptionInput?.checked),
+  };
+}
+
+function loadActiveSliderControls() {
+  const slider = getActiveSliderItem();
+  if (!slider) {
+    return;
+  }
+
+  sliderState.isLoadingSliderControls = true;
+  if (sliderNameInput) {
+    sliderNameInput.value = slider.className;
+  }
+  if (sliderSwiperPresetInput) {
+    sliderSwiperPresetInput.value = slider.preset;
+  }
+  if (sliderSlidesPerViewInput) {
+    sliderSlidesPerViewInput.value = slider.options.slidesPerView;
+  }
+  if (sliderSpaceBetweenInput) {
+    sliderSpaceBetweenInput.value = slider.options.spaceBetween;
+  }
+  if (sliderSpeedInput) {
+    sliderSpeedInput.value = slider.options.speed;
+  }
+  if (sliderIntervalInput) {
+    sliderIntervalInput.value = slider.options.interval;
+  }
+  if (sliderDirectionInput) {
+    sliderDirectionInput.value = slider.options.direction;
+  }
+  if (sliderPaginationInput) {
+    sliderPaginationInput.value = slider.options.pagination;
+  }
+  if (sliderAutoplayOptionInput) {
+    sliderAutoplayOptionInput.checked = slider.options.autoplay;
+  }
+  if (sliderLoopOptionInput) {
+    sliderLoopOptionInput.checked = slider.options.loop;
+  }
+  if (sliderArrowsOptionInput) {
+    sliderArrowsOptionInput.checked = slider.options.arrows;
+  }
+  if (sliderCenteredOptionInput) {
+    sliderCenteredOptionInput.checked = slider.options.centered;
+  }
+  sliderState.isLoadingSliderControls = false;
+}
+
+function renderSliderList() {
+  if (!sliderList) {
+    return;
+  }
+
+  sliderList.innerHTML = sliderState.sliders
+    .map(
+      (slider, index) => `<button class="slider-list-item${
+        slider.id === sliderState.selectedSliderId ? " is-active" : ""
+      }" type="button" data-slider-id="${slider.id}">
+        <span>${escapeHtml(slider.className || `slider-${index + 1}`)}</span>
+        <small>${slider.images.length}개</small>
+      </button>`
+    )
+    .join("");
+
+  if (deleteSliderButton) {
+    deleteSliderButton.disabled = sliderState.sliders.length <= 1;
+  }
+}
+
+function handleSliderListClick(event) {
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-slider-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  saveActiveSliderControls();
+  sliderState.selectedSliderId = button.dataset.sliderId || sliderState.selectedSliderId;
+  loadActiveSliderControls();
+  updateSliderBuilder();
+}
+
+function addSliderItem() {
+  saveActiveSliderControls();
+  const slider = createSliderItem(sliderState.sliders.length + 1);
+  sliderState.sliders.push(slider);
+  sliderState.selectedSliderId = slider.id;
+  loadActiveSliderControls();
+  sliderStatus.textContent = `${slider.className} 슬라이더를 추가했습니다.`;
+  updateSliderBuilder();
+}
+
+function deleteSelectedSliderItem() {
+  if (sliderState.sliders.length <= 1) {
+    return;
+  }
+
+  const selectedSlider = getActiveSliderItem();
+  selectedSlider?.images.forEach((image) => URL.revokeObjectURL(image.url));
+  sliderState.sliders = sliderState.sliders.filter((slider) => slider.id !== sliderState.selectedSliderId);
+  sliderState.selectedSliderId = sliderState.sliders[0].id;
+  loadActiveSliderControls();
+  sliderStatus.textContent = "선택한 슬라이더를 삭제했습니다.";
+  updateSliderBuilder();
+}
+
+function handleSliderImageUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  if (!files.length) {
+    return;
+  }
+
+  files.forEach((file) => {
+    sliderState.images.push({
+      id: crypto.randomUUID(),
+      name: file.name,
+      url: URL.createObjectURL(file),
+    });
+  });
+
+  sliderState.currentIndex = Math.min(sliderState.currentIndex, sliderState.images.length - 1);
+  sliderStatus.textContent = `${files.length}개 이미지를 추가했습니다. 소스는 아래에서 바로 복사할 수 있습니다.`;
+  event.target.value = "";
+  updateSliderBuilder();
+}
+
+function clearSliderImages() {
+  sliderState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  sliderState.images = [];
+  sliderState.currentIndex = 0;
+  sliderStatus.textContent = "슬라이드 이미지를 모두 삭제했습니다.";
+  updateSliderBuilder();
+}
+
+function handleSliderPresetChange() {
+  syncSliderOptionControlsToPreset();
+  updateSliderBuilder();
+}
+
+function syncSliderOptionControlsToPreset() {
+  const presetConfig = getBaseSwiperPresetConfig(getSliderSwiperPreset());
+  if (sliderSlidesPerViewInput) {
+    sliderSlidesPerViewInput.value = String(presetConfig.slidesPerView);
+  }
+  if (sliderSpaceBetweenInput) {
+    sliderSpaceBetweenInput.value = String(presetConfig.spaceBetween);
+  }
+  if (sliderSpeedInput) {
+    sliderSpeedInput.value = String(presetConfig.speed);
+  }
+  if (sliderIntervalInput) {
+    sliderIntervalInput.value = String(presetConfig.interval);
+  }
+  if (sliderDirectionInput) {
+    sliderDirectionInput.value = presetConfig.direction;
+  }
+  if (sliderPaginationInput) {
+    sliderPaginationInput.value = presetConfig.scrollbar ? "scrollbar" : presetConfig.navigationType;
+  }
+  if (sliderAutoplayOptionInput) {
+    sliderAutoplayOptionInput.checked = presetConfig.autoplay;
+  }
+  if (sliderLoopOptionInput) {
+    sliderLoopOptionInput.checked = presetConfig.loop;
+  }
+  if (sliderArrowsOptionInput) {
+    sliderArrowsOptionInput.checked = presetConfig.arrows;
+  }
+  if (sliderCenteredOptionInput) {
+    sliderCenteredOptionInput.checked = presetConfig.centeredSlides;
+  }
+}
+
+function updateSliderBuilder() {
+  saveActiveSliderControls();
+  renderSliderList();
+  renderSliderPreview();
+  updateSliderSources();
+  updateSliderControls();
+}
+
+function renderSliderPreview() {
+  if (!sliderPreview) {
+    return;
+  }
+
+  window.clearInterval(sliderState.timerId);
+  sliderState.timerId = null;
+  destroySliderPreviewSwiper();
+
+  if (!sliderState.images.length) {
+    sliderPreview.className = "slider-preview-empty";
+    sliderPreview.textContent = "슬라이드 이미지를 업로드해 주세요.";
+    sliderMeta.textContent = "업로드한 이미지 순서대로 슬라이더가 구성됩니다.";
+    return;
+  }
+
+  const className = getSliderClassName();
+  const preset = getSliderSwiperPreset();
+  const presetConfig = getSwiperPresetConfig(preset);
+  const loop = presetConfig.loop;
+  const continuous = isContinuousSlider();
+  const slides = sliderState.images
+    .map(
+      (image) => `
+        <div class="swiper-slide">
+          <img src="${image.url}" alt="${escapeHtml(image.name)}" />
+        </div>`
+    )
+    .join("");
+  const arrows = presetConfig.arrows && !continuous
+    ? `
+        <button class="${className}__arrow ${className}__arrow--prev" type="button" data-slider-prev aria-label="이전 슬라이드"></button>
+        <button class="${className}__arrow ${className}__arrow--next" type="button" data-slider-next aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = continuous ? "" : buildSwiperNavigationMarkup(className, presetConfig.navigationType, {
+    images: sliderState.images,
+    usePreviewUrls: true,
+  });
+  const scrollbar = presetConfig.scrollbar
+    ? `
+      <div class="${className}__scrollbar"></div>`
+    : "";
+
+  sliderPreview.className = "slider-preview";
+  sliderPreview.innerHTML = `
+    <div class="${className} swiper" data-slider-preview data-preset="${preset}" data-direction="${presetConfig.direction}">
+      <div class="swiper-wrapper">
+        ${slides}
+      </div>
+      ${arrows}
+      ${navigation}
+      ${scrollbar}
+    </div>`;
+
+  sliderMeta.textContent = `슬라이드 ${sliderState.images.length}개 · Swiper · ${getSwiperPresetLabel(
+    preset
+  )}${loop ? " · 무한 반복" : ""}`;
+
+  initializeSliderPreviewSwiper(className, presetConfig);
+}
+
+function handleSliderPreviewClick(event) {
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || !sliderState.images.length) {
+    return;
+  }
+
+  if (target.closest("[data-slider-prev]")) {
+    moveSliderPreview(-1);
+    return;
+  }
+
+  if (target.closest("[data-slider-next]")) {
+    moveSliderPreview(1);
+    return;
+  }
+
+  const dot = target.closest("[data-slider-dot]");
+  if (dot instanceof HTMLElement) {
+    sliderState.currentIndex = Number(dot.dataset.sliderDot || 0);
+    applySliderPreviewState();
+  }
+}
+
+function moveSliderPreview(delta) {
+  if (!sliderState.images.length) {
+    return;
+  }
+
+  if (sliderState.previewSwiper) {
+    if (delta > 0) {
+      sliderState.previewSwiper.slideNext();
+    } else {
+      sliderState.previewSwiper.slidePrev();
+    }
+    return;
+  }
+
+  sliderState.currentIndex =
+    (sliderState.currentIndex + delta + sliderState.images.length) % sliderState.images.length;
+  applySliderPreviewState();
+}
+
+function destroySliderPreviewSwiper() {
+  if (!sliderState.previewSwiper) {
+    return;
+  }
+
+  sliderState.previewSwiper.destroy(true, true);
+  sliderState.previewSwiper = null;
+}
+
+function loadSwiperLibrary() {
+  if (window.Swiper) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    if (!document.querySelector('link[data-swiper-cdn]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css";
+      link.dataset.swiperCdn = "true";
+      document.head.appendChild(link);
+    }
+
+    const existingScript = document.querySelector('script[data-swiper-cdn]');
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js";
+    script.dataset.swiperCdn = "true";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+function initializeSliderPreviewSwiper(className, presetConfig) {
+  const slider = sliderPreview?.querySelector("[data-slider-preview]");
+  if (!slider) {
+    return;
+  }
+
+  loadSwiperLibrary()
+    .then(() => {
+      const options = buildSwiperOptionsForElement(slider, className, presetConfig, {
+        interval: presetConfig.interval,
+        loop: presetConfig.loop && sliderState.images.length > 1,
+        autoplay: presetConfig.autoplay,
+      });
+      sliderState.previewSwiper = new window.Swiper(slider, options);
+      bindSwiperThumbButtons(sliderState.previewSwiper, slider);
+      applyContinuousSwiperTiming(sliderState.previewSwiper, slider, options);
+    })
+    .catch(() => {
+      sliderStatus.textContent =
+        "Swiper CDN을 불러오지 못했습니다. 인터넷 연결 후 다시 확인해 주세요.";
+    });
+}
+
+function buildSwiperOptionsForElement(slider, className, presetConfig, settings) {
+  const continuous = settings.loop && presetConfig.effect === "slide";
+  const options = {
+    effect: presetConfig.effect,
+    direction: presetConfig.direction,
+    loop: settings.loop,
+    speed: continuous ? settings.interval : presetConfig.speed,
+    slidesPerView: presetConfig.slidesPerView,
+    spaceBetween: presetConfig.spaceBetween,
+    centeredSlides: presetConfig.centeredSlides,
+    freeMode: presetConfig.freeMode,
+    autoHeight: presetConfig.autoHeight,
+    grabCursor: true,
+  };
+
+  if (presetConfig.effect === "coverflow") {
+    options.coverflowEffect = {
+      rotate: 45,
+      stretch: 0,
+      depth: 120,
+      modifier: 1,
+      slideShadows: true,
+    };
+  }
+
+  if (settings.autoplay) {
+    options.autoplay = {
+      delay: continuous ? 0 : settings.interval,
+      disableOnInteraction: false,
+    };
+  }
+
+  if (continuous) {
+    options.allowTouchMove = false;
+    options.freeMode = true;
+  }
+
+  const prevEl = slider.querySelector(`.${className}__arrow--prev`);
+  const nextEl = slider.querySelector(`.${className}__arrow--next`);
+  if (prevEl && nextEl) {
+    options.navigation = { prevEl, nextEl };
+  }
+
+  const paginationEl = slider.querySelector(`.${className}__pagination`);
+  if (paginationEl && presetConfig.navigationType !== "thumbnails") {
+    options.pagination = {
+      el: paginationEl,
+      clickable: true,
+      dynamicBullets: presetConfig.navigationType === "dynamic",
+      type:
+        presetConfig.navigationType === "counter"
+          ? "fraction"
+          : presetConfig.navigationType === "progress"
+            ? "progressbar"
+            : "bullets",
+    };
+  }
+
+  const scrollbarEl = slider.querySelector(`.${className}__scrollbar`);
+  if (scrollbarEl) {
+    options.scrollbar = {
+      el: scrollbarEl,
+      draggable: true,
+    };
+  }
+
+  return options;
+}
+
+function bindSwiperThumbButtons(swiper, slider) {
+  const thumbs = Array.from(slider.querySelectorAll("[data-swiper-thumb]"));
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener("click", () => {
+      swiper.slideTo(Number(thumb.dataset.swiperThumb || 0));
+    });
+  });
+  swiper.on("slideChange", () => {
+    thumbs.forEach((thumb, index) => {
+      thumb.classList.toggle("is-active", index === swiper.realIndex);
+    });
+  });
+}
+
+function applyContinuousSwiperTiming(swiper, slider, options) {
+  if (!options.loop || options.effect !== "slide" || !options.autoplay) {
+    return;
+  }
+
+  const wrapper = slider.querySelector(".swiper-wrapper");
+  if (wrapper) {
+    wrapper.style.transitionTimingFunction = "linear";
+  }
+  swiper.on("setTransition", (_swiper, duration) => {
+    if (duration > 0 && wrapper) {
+      wrapper.style.transitionTimingFunction = "linear";
+    }
+  });
+}
+
+function applySliderPreviewState() {
+  if (!sliderPreview || !sliderState.images.length) {
+    return;
+  }
+
+  const className = getSliderClassName();
+  const presetConfig = getSwiperPresetConfig(getSliderSwiperPreset());
+  const slides = sliderPreview.querySelectorAll(`[class~="${className}__slide"]`);
+  const dots = sliderPreview.querySelectorAll("[data-slider-dot]");
+  const counterCurrent = sliderPreview.querySelector("[data-slider-current]");
+  const progressBar = sliderPreview.querySelector("[data-slider-progress]");
+  const track = sliderPreview.querySelector(`[class~="${className}__track"]`);
+
+  slides.forEach((slide, index) => {
+    slide.classList.toggle("is-active", index === sliderState.currentIndex);
+  });
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === sliderState.currentIndex);
+  });
+  if (counterCurrent) {
+    counterCurrent.textContent = String(sliderState.currentIndex + 1);
+  }
+  if (progressBar) {
+    progressBar.style.width =
+      ((sliderState.currentIndex + 1) / sliderState.images.length) * 100 + "%";
+  }
+  if (track) {
+    track.style.transform =
+      presetConfig.effect === "slide" ? `translateX(${sliderState.currentIndex * -100}%)` : "";
+  }
+
+  sliderMeta.textContent = `슬라이드 ${sliderState.images.length}개 · 현재 ${
+    sliderState.currentIndex + 1
+  }번째 이미지 · Swiper · ${getSwiperPresetLabel(getSliderSwiperPreset())} · ${getSliderNavigationLabel(
+    presetConfig.navigationType
+  )} · ${getSliderTransitionLabel(presetConfig.effect)}${presetConfig.loop ? " · 무한 반복" : ""}`;
+}
+
+function updateSliderSources() {
+  if (!sliderHtmlCode || !sliderCssCode || !sliderJsCode) {
+    return;
+  }
+
+  if (!sliderState.sliders.some((slider) => slider.images.length)) {
+    sliderState.generated = { html: "", css: "", js: "" };
+    sliderHtmlCode.textContent = "";
+    sliderCssCode.textContent = "";
+    sliderJsCode.textContent = "";
+    return;
+  }
+
+  sliderState.generated = buildAllSliderSources();
+  sliderHtmlCode.textContent = sliderState.generated.html;
+  sliderCssCode.textContent = sliderState.generated.css;
+  sliderJsCode.textContent = sliderState.generated.js;
+}
+
+function updateSliderControls() {
+  const hasImages = sliderState.sliders.some((slider) => slider.images.length > 0);
+  const activeHasImages = sliderState.images.length > 0;
+  if (clearSliderImagesButton) {
+    clearSliderImagesButton.disabled = !activeHasImages;
+  }
+  [
+    copySliderHtmlButton,
+    copySliderCssButton,
+    copySliderJsButton,
+    copySliderAllButton,
+    copySliderHtmlInlineButton,
+    copySliderCssInlineButton,
+    copySliderJsInlineButton,
+  ].forEach((button) => {
+    if (button) {
+      button.disabled = !hasImages;
+    }
+  });
+}
+
+function buildSliderSource() {
+  return buildSwiperSliderSource(getActiveSliderItem());
+}
+
+function buildAllSliderSources() {
+  const sources = sliderState.sliders
+    .filter((slider) => slider.images.length)
+    .map((slider) => ({
+      slider,
+      source: buildSwiperSliderSource(slider),
+    }));
+
+  return {
+    html: sources
+      .map(({ slider, source }) => `<!-- ${slider.className} -->\n${source.html}`)
+      .join("\n\n"),
+    css: sources
+      .map(({ slider, source }) => `/* ${slider.className} */\n${source.css}`)
+      .join("\n\n"),
+    js: `<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+${sources
+  .map(({ slider, source }) => `<!-- ${slider.className} -->\n${source.jsInit}`)
+  .join("\n\n")}`,
+  };
+}
+
+function buildCustomSliderSource() {
+  const className = getSliderClassName();
+  const showArrows = sliderArrowsInput?.checked ?? true;
+  const navigationType = getSliderNavigationType();
+  const transitionType = getSliderTransitionType();
+  const autoplay = sliderAutoplayInput?.checked ?? true;
+  const loop = getSliderLoop() && transitionType === "slide" && sliderState.images.length > 1;
+  const interval = getSliderInterval();
+  const sourceSlides = loop ? [...sliderState.images, ...sliderState.images] : sliderState.images;
+  const slides = sourceSlides
+    .map(
+      (image, index) => `    <div class="${className}__slide${
+        index === 0 ? " is-active" : ""
+      }${image.clone ? ` ${className}__slide--clone` : ""}">
+      <img src="./images/${escapeHtml(sanitizeExportFileName(image.name))}" alt="${escapeHtml(
+        getSliderAltText(image.name)
+      )}" />
+    </div>`
+    )
+    .join("\n");
+  const arrows = showArrows && !loop
+    ? `
+    <button class="${className}__arrow ${className}__arrow--prev" type="button" data-slider-prev aria-label="이전 슬라이드"></button>
+    <button class="${className}__arrow ${className}__arrow--next" type="button" data-slider-next aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = loop
+    ? ""
+    : buildSliderNavigationMarkup(className, navigationType, {
+        images: sliderState.images,
+        currentIndex: 0,
+        usePreviewUrls: false,
+      });
+
+  const trackStyle = loop ? ` style="--slider-duration: ${getContinuousSliderDuration()}ms;"` : "";
+  const html = `<div class="${className} ${className}--${transitionType}${
+    loop ? ` ${className}--continuous` : ""
+  }" data-slider data-autoplay="${autoplay}" data-interval="${interval}" data-loop="${loop}">
+  <div class="${className}__viewport">
+    <div class="${className}__track"${trackStyle}>
+${slides}
+    </div>${arrows}
+  </div>${navigation}
+</div>`;
+
+  const css = `@import url("https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css");
+
+.${className} {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.${className}__viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.${className}__track {
+  position: relative;
+}
+
+.${className}--slide .${className}__track {
+  display: flex;
+  transition: transform 420ms ease;
+}
+
+.${className}--continuous .${className}__track {
+  animation: ${className}-continuous-slide var(--slider-duration, 12000ms) linear infinite;
+  transition: none;
+}
+
+.${className}--continuous:hover .${className}__track {
+  animation-play-state: paused;
+}
+
+.${className}__slide {
+  display: none;
+}
+
+.${className}__slide.is-active {
+  display: block;
+}
+
+.${className}--slide .${className}__slide {
+  display: block;
+  width: 100%;
+  flex: 0 0 100%;
+}
+
+.${className}--continuous .${className}__slide {
+  width: 100vw;
+}
+
+.${className}__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes ${className}-continuous-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.${className}__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.55);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.${className}__arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+}
+
+.${className}__arrow--prev {
+  left: 16px;
+}
+
+.${className}__arrow--prev::before {
+  transform: translate(-35%, -50%) rotate(-45deg);
+}
+
+.${className}__arrow--next {
+  right: 16px;
+}
+
+.${className}__arrow--next::before {
+  transform: translate(-65%, -50%) rotate(135deg);
+}
+
+.${className}__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #c7c7c7;
+  cursor: pointer;
+}
+
+.${className}__dot.is-active {
+  width: 24px;
+  background: #111;
+}
+
+.${className}__counter {
+  margin-top: 14px;
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.${className}__progress {
+  position: relative;
+  height: 3px;
+  margin-top: 14px;
+  overflow: hidden;
+  background: #e5e5e5;
+}
+
+.${className}__progress-bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #111;
+  transition: width 320ms ease;
+}
+
+.${className}__thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__thumb {
+  padding: 0;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.${className}__thumb.is-active {
+  border-color: #111;
+}
+
+.${className}__thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}`;
+
+  const js = `document.querySelectorAll("[data-slider]").forEach((slider) => {
+  const slides = Array.from(slider.querySelectorAll(".${className}__slide"));
+  const dots = Array.from(slider.querySelectorAll("[data-slider-dot]"));
+  const counterCurrent = slider.querySelector("[data-slider-current]");
+  const progressBar = slider.querySelector("[data-slider-progress]");
+  const prevButton = slider.querySelector("[data-slider-prev]");
+  const nextButton = slider.querySelector("[data-slider-next]");
+  const autoplay = slider.dataset.autoplay === "true";
+  const loop = slider.dataset.loop === "true" && slider.classList.contains("${className}--slide");
+  const continuous = slider.classList.contains("${className}--continuous");
+  const interval = Number(slider.dataset.interval || ${interval});
+  let currentIndex = 0;
+  let visualIndex = 0;
+  let timerId = null;
+
+  const getRealIndex = () => {
+    if (!loop) return currentIndex;
+    if (currentIndex === 0) return slides.length - 3;
+    if (currentIndex === slides.length - 1) return 0;
+    return currentIndex - 1;
+  };
+
+  const syncNavigation = () => {
+    visualIndex = getRealIndex();
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("is-active", slideIndex === currentIndex);
+    });
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("is-active", dotIndex === visualIndex);
+    });
+    if (counterCurrent) {
+      counterCurrent.textContent = String(visualIndex + 1);
+    }
+    if (progressBar) {
+      progressBar.style.width = ((visualIndex + 1) / ${sliderState.images.length}) * 100 + "%";
+    }
+  };
+
+  const jumpWithoutAnimation = (index) => {
+    const track = slider.querySelector(".${className}__track");
+    if (!track) return;
+    track.style.transition = "none";
+    currentIndex = index;
+    track.style.transform = "translateX(" + currentIndex * -100 + "%)";
+    syncNavigation();
+    track.offsetHeight;
+    track.style.transition = "";
+  };
+
+  const showSlide = (index, options = {}) => {
+    if (!slides.length) return;
+    if (continuous) return;
+    currentIndex = loop ? index : (index + slides.length) % slides.length;
+    if (slider.classList.contains("${className}--slide")) {
+      const track = slider.querySelector(".${className}__track");
+      if (track) {
+        track.style.transform = "translateX(" + currentIndex * -100 + "%)";
+        if (loop && !options.skipLoopFix) {
+          track.addEventListener(
+            "transitionend",
+            () => {
+              if (currentIndex === 0) {
+                jumpWithoutAnimation(slides.length - 2);
+              } else if (currentIndex === slides.length - 1) {
+                jumpWithoutAnimation(1);
+              }
+            },
+            { once: true }
+          );
+      }
+    }
+    }
+    syncNavigation();
+  };
+
+  const move = (delta) => {
+    showSlide(currentIndex + delta);
+  };
+
+  const restart = () => {
+    if (continuous || !autoplay || slides.length < 2) return;
+    window.clearInterval(timerId);
+    timerId = window.setInterval(() => move(1), interval);
+  };
+
+  prevButton?.addEventListener("click", () => {
+    move(-1);
+    restart();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    move(1);
+    restart();
+  });
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      showSlide(Number(dot.dataset.sliderDot || 0) + (loop ? 1 : 0));
+      restart();
+    });
+  });
+
+  showSlide(loop ? 1 : 0, { skipLoopFix: true });
+  restart();
+});`;
+
+  return { html, css, js };
+}
+
+function buildSwiperSliderSource(slider = getActiveSliderItem()) {
+  const className = getSliderClassName(slider?.className);
+  const preset = getSliderSwiperPreset(slider);
+  const presetConfig = getSwiperPresetConfig(preset, slider?.options);
+  const autoplay = presetConfig.autoplay;
+  const images = slider?.images ?? [];
+  const loop = presetConfig.loop && presetConfig.effect === "slide" && images.length > 1;
+  const interval = presetConfig.interval;
+  const slides = images
+    .map(
+      (image) => `    <div class="swiper-slide">
+      <img src="./images/${escapeHtml(sanitizeExportFileName(image.name))}" alt="${escapeHtml(
+        getSliderAltText(image.name)
+      )}" />
+    </div>`
+    )
+    .join("\n");
+  if (preset === "multi-view") {
+    return buildSwiperDemoSource({
+      className,
+      preset,
+      presetConfig,
+      slides,
+      css: buildSlidesPerViewCss(className),
+      options: buildSwiperInitOptionsSource(className, presetConfig, {
+        interval,
+        loop,
+      }),
+    });
+  }
+  const arrows = presetConfig.arrows && !presetConfig.continuous
+    ? `
+    <button class="${className}__arrow ${className}__arrow--prev" type="button" aria-label="이전 슬라이드"></button>
+    <button class="${className}__arrow ${className}__arrow--next" type="button" aria-label="다음 슬라이드"></button>`
+    : "";
+  const navigation = presetConfig.continuous
+    ? ""
+    : buildSwiperNavigationMarkup(className, presetConfig.navigationType);
+  const scrollbar = presetConfig.scrollbar
+    ? `
+  <div class="${className}__scrollbar"></div>`
+    : "";
+
+  const html = `<div class="${className} swiper" data-swiper-slider data-preset="${preset}" data-effect="${presetConfig.effect}" data-direction="${presetConfig.direction}" data-slides-per-view="${presetConfig.slidesPerView}" data-space-between="${presetConfig.spaceBetween}" data-centered="${presetConfig.centeredSlides}" data-free-mode="${presetConfig.freeMode}" data-auto-height="${presetConfig.autoHeight}" data-autoplay="${autoplay}" data-interval="${interval}" data-navigation="${presetConfig.navigationType}" data-loop="${loop}">
+  <div class="swiper-wrapper">
+${slides}
+  </div>${arrows}${navigation}${scrollbar}
+</div>`;
+
+  const css = `.${className} {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.${className}[data-direction="vertical"] {
+  height: 560px;
+}
+
+.${className} .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.${className}[data-slides-per-view="auto"] .swiper-slide {
+  width: 72%;
+}
+
+.${className}[data-preset="multi-view"] .swiper-slide {
+  min-width: 0;
+}
+
+.${className}__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.55);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.${className}__arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+}
+
+.${className}__arrow--prev {
+  left: 16px;
+}
+
+.${className}__arrow--prev::before {
+  transform: translate(-35%, -50%) rotate(-45deg);
+}
+
+.${className}__arrow--next {
+  right: 16px;
+}
+
+.${className}__arrow--next::before {
+  transform: translate(-65%, -50%) rotate(135deg);
+}
+
+.${className}__pagination {
+  position: static;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.${className}__pagination .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+  margin: 0;
+  background: #c7c7c7;
+  opacity: 1;
+}
+
+.${className}__pagination .swiper-pagination-bullet-active {
+  width: 24px;
+  border-radius: 999px;
+  background: #111;
+}
+
+.${className}__pagination.swiper-pagination-fraction {
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.${className}__pagination.swiper-pagination-progressbar {
+  position: relative;
+  height: 3px;
+  margin-top: 14px;
+  background: #e5e5e5;
+}
+
+.${className}__pagination .swiper-pagination-progressbar-fill {
+  background: #111;
+}
+
+.${className}__scrollbar {
+  position: relative;
+  height: 4px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: #e5e5e5;
+}
+
+.${className}__scrollbar .swiper-scrollbar-drag {
+  background: #111;
+}
+
+.${className}__thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.${className}__thumb {
+  padding: 0;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.${className}__thumb.is-active {
+  border-color: #111;
+}
+
+.${className}__thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}`;
+
+  const js = buildSwiperScriptSource(
+    className,
+    buildSwiperInitOptionsSource(className, presetConfig, {
+      interval,
+      loop,
+    })
+  );
+  const jsInit = buildSwiperInitScriptSource(
+    className,
+    buildSwiperInitOptionsSource(className, presetConfig, {
+      interval,
+      loop,
+    })
+  );
+
+  return { html, css, js, jsInit };
+}
+
+function buildSwiperDemoSource({ className, preset, presetConfig, slides, css, options }) {
+  const navigation = buildSwiperNavigationMarkup(className, presetConfig.navigationType);
+  const html = `<div class="swiper ${className}" data-swiper-slider data-preset="${preset}">
+  <div class="swiper-wrapper">
+${slides}
+  </div>${navigation}
+</div>`;
+  const js = buildSwiperScriptSource(className, options);
+  const jsInit = buildSwiperInitScriptSource(className, options);
+
+  return { html, css, js, jsInit };
+}
+
+function buildSwiperScriptSource(className, options) {
+  return `<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+${buildSwiperInitScriptSource(className, options)}`;
+}
+
+function buildSwiperInitScriptSource(className, options) {
+  return `<!-- Initialize Swiper -->
+<script>
+  var ${toSafeVariableName(className)} = new Swiper(".${className}", ${options});
+</script>`;
+}
+
+function toSafeVariableName(className) {
+  const name = String(className || "swiper")
+    .replaceAll(/[^a-zA-Z0-9_$]/g, "_")
+    .replaceAll(/_+/g, "_");
+  return /^[a-zA-Z_$]/.test(name) ? `${name}Swiper` : `swiper${name}Swiper`;
+}
+
+function buildSwiperInitOptionsSource(className, presetConfig, settings = {}) {
+  const interval = settings.interval ?? presetConfig.interval ?? 3000;
+  const loop = settings.loop ?? presetConfig.loop;
+  const continuous = presetConfig.continuous && loop && presetConfig.effect === "slide";
+  const options = [
+    `effect: "${presetConfig.effect}"`,
+    `direction: "${presetConfig.direction}"`,
+    `loop: ${loop}`,
+    `speed: ${continuous ? interval : presetConfig.speed}`,
+    `slidesPerView: ${
+      presetConfig.slidesPerView === "auto" ? `"auto"` : presetConfig.slidesPerView
+    }`,
+    `spaceBetween: ${presetConfig.spaceBetween}`,
+    `centeredSlides: ${presetConfig.centeredSlides}`,
+    `freeMode: ${continuous || presetConfig.freeMode}`,
+    `autoHeight: ${presetConfig.autoHeight}`,
+    `grabCursor: true`,
+  ];
+
+  if (presetConfig.effect === "coverflow") {
+    options.push(`coverflowEffect: {
+    rotate: 45,
+    stretch: 0,
+    depth: 120,
+    modifier: 1,
+    slideShadows: true,
+  }`);
+  }
+
+  if (presetConfig.autoplay) {
+    options.push(`autoplay: {
+    delay: ${continuous ? 0 : interval},
+    disableOnInteraction: false,
+  }`);
+  }
+
+  if (continuous) {
+    options.push(`allowTouchMove: false`);
+    options.push(`on: {
+    init: function () {
+      this.wrapperEl.style.transitionTimingFunction = "linear";
+    },
+    setTransition: function () {
+      this.wrapperEl.style.transitionTimingFunction = "linear";
+    },
+  }`);
+  }
+
+  if (presetConfig.arrows && !presetConfig.continuous) {
+    options.push(`navigation: {
+    nextEl: ".${className}__arrow--next",
+    prevEl: ".${className}__arrow--prev",
+  }`);
+  }
+
+  if (presetConfig.navigationType && presetConfig.navigationType !== "none" && presetConfig.navigationType !== "thumbnails") {
+    options.push(`pagination: {
+    el: ".${className}__pagination",
+    clickable: true,
+    dynamicBullets: ${presetConfig.navigationType === "dynamic"},
+    type: "${
+      presetConfig.navigationType === "counter"
+        ? "fraction"
+        : presetConfig.navigationType === "progress"
+          ? "progressbar"
+          : "bullets"
+    }",
+  }`);
+  }
+
+  if (presetConfig.scrollbar) {
+    options.push(`scrollbar: {
+    el: ".${className}__scrollbar",
+    draggable: true,
+  }`);
+  }
+
+  return `{
+  ${options.join(",\n  ")}
+}`;
+}
+
+function buildSlidesPerViewCss(className) {
+  return `@import url("https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css");
+
+.${className} {
+  width: 100%;
+  height: 100%;
+}
+
+.${className} .swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.${className} .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.${className}__pagination {
+  position: static;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+  text-align: center;
+}`;
+}
+
+function buildSliderNavigationMarkup(className, navigationType, options) {
+  const { images, currentIndex, usePreviewUrls } = options;
+
+  if (navigationType === "none") {
+    return "";
+  }
+
+  if (navigationType === "counter") {
+    return `
+  <div class="${className}__counter" aria-live="polite">
+    <span data-slider-current>${currentIndex + 1}</span> / <span>${images.length}</span>
+  </div>`;
+  }
+
+  if (navigationType === "progress") {
+    const width = images.length ? ((currentIndex + 1) / images.length) * 100 : 0;
+    return `
+  <div class="${className}__progress" aria-hidden="true">
+    <span class="${className}__progress-bar" data-slider-progress style="width: ${width}%;"></span>
+  </div>`;
+  }
+
+  if (navigationType === "thumbnails") {
+    return `
+  <div class="${className}__thumbs">
+${images
+  .map((image, index) => {
+    const src = usePreviewUrls ? image.url : `./images/${sanitizeExportFileName(image.name)}`;
+    return `    <button class="${className}__thumb${
+      index === currentIndex ? " is-active" : ""
+    }" type="button" data-slider-dot="${index}" aria-label="${index + 1}번 슬라이드">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(getSliderAltText(image.name))}" />
+    </button>`;
+  })
+  .join("\n")}
+  </div>`;
+  }
+
+  return `
+  <div class="${className}__dots">
+${images
+  .map(
+    (_, index) =>
+      `    <button class="${className}__dot${
+        index === currentIndex ? " is-active" : ""
+      }" type="button" data-slider-dot="${index}" aria-label="${index + 1}번 슬라이드"></button>`
+  )
+  .join("\n")}
+  </div>`;
+}
+
+function buildSwiperNavigationMarkup(className, navigationType, options = {}) {
+  const images = options.images ?? sliderState.images;
+  const usePreviewUrls = options.usePreviewUrls ?? false;
+
+  if (navigationType === "none") {
+    return "";
+  }
+
+  if (navigationType === "thumbnails") {
+    return `
+  <div class="${className}__thumbs">
+${images
+  .map(
+    (image, index) => {
+      const src = usePreviewUrls ? image.url : `./images/${sanitizeExportFileName(image.name)}`;
+      return `    <button class="${className}__thumb${
+        index === 0 ? " is-active" : ""
+      }" type="button" data-swiper-thumb="${index}" aria-label="${index + 1}번 슬라이드">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(getSliderAltText(image.name))}" />
+    </button>`
+    }
+  )
+  .join("\n")}
+  </div>`;
+  }
+
+  return `
+  <div class="${className}__pagination"></div>`;
+}
+
+function getBaseSwiperPresetConfig(preset) {
+  const config = {
+    effect: "slide",
+    direction: "horizontal",
+    navigationType: "none",
+    slidesPerView: 1,
+    spaceBetween: 0,
+    speed: 420,
+    centeredSlides: false,
+    freeMode: false,
+    autoHeight: false,
+    scrollbar: false,
+    arrows: false,
+    autoplay: false,
+    loop: false,
+    continuous: false,
+    interval: 3000,
+  };
+
+  if (preset === "navigation") {
+    config.arrows = true;
+  }
+  if (preset === "pagination") {
+    config.navigationType = "dots";
+  }
+  if (preset === "dynamic-pagination") {
+    config.navigationType = "dynamic";
+  }
+  if (preset === "scrollbar") {
+    config.navigationType = "none";
+    config.scrollbar = true;
+  }
+  if (preset === "autoplay") {
+    config.navigationType = "dots";
+    config.autoplay = true;
+  }
+  if (preset === "loop") {
+    config.navigationType = "dots";
+    config.loop = true;
+  }
+  if (preset === "continuous") {
+    config.autoplay = true;
+    config.loop = true;
+    config.continuous = true;
+    config.interval = 6000;
+  }
+  if (preset === "vertical") {
+    config.direction = "vertical";
+  }
+  if (preset === "free-mode") {
+    config.slidesPerView = "auto";
+    config.spaceBetween = 16;
+    config.freeMode = true;
+  }
+  if (preset === "centered") {
+    config.slidesPerView = "auto";
+    config.spaceBetween = 16;
+    config.centeredSlides = true;
+  }
+  if (preset === "multi-view") {
+    config.slidesPerView = 3;
+    config.spaceBetween = 30;
+    config.navigationType = "dots";
+  }
+  if (preset === "auto-height") {
+    config.autoHeight = true;
+  }
+  if (["fade", "cube", "coverflow", "flip", "cards"].includes(preset)) {
+    config.effect = preset;
+  }
+  if (preset === "coverflow") {
+    config.slidesPerView = "auto";
+    config.centeredSlides = true;
+    config.spaceBetween = 16;
+  }
+  if (preset === "thumbs") {
+    config.navigationType = "thumbnails";
+  }
+
+  return config;
+}
+
+function getSwiperPresetConfig(preset, settings = null) {
+  const config = getBaseSwiperPresetConfig(preset);
+  const slidesPerView = settings?.slidesPerView ?? sliderSlidesPerViewInput?.value ?? String(config.slidesPerView);
+  const spaceBetween = Number(settings?.spaceBetween ?? sliderSpaceBetweenInput?.value ?? config.spaceBetween);
+  const speed = Number(settings?.speed ?? sliderSpeedInput?.value ?? config.speed);
+  const interval = Number(settings?.interval ?? sliderIntervalInput?.value ?? config.interval);
+  const direction = settings?.direction ?? sliderDirectionInput?.value ?? config.direction;
+  const navigationType = settings?.pagination ?? sliderPaginationInput?.value ?? config.navigationType;
+
+  config.slidesPerView = slidesPerView === "auto" ? "auto" : Number(slidesPerView || 1);
+  config.spaceBetween = Math.max(0, spaceBetween);
+  config.speed = Math.max(100, speed);
+  config.interval = Math.max(0, interval);
+  config.direction = direction === "vertical" ? "vertical" : "horizontal";
+  config.navigationType = navigationType;
+  config.autoplay = settings ? Boolean(settings.autoplay) : Boolean(sliderAutoplayOptionInput?.checked);
+  config.loop = settings ? Boolean(settings.loop) : Boolean(sliderLoopOptionInput?.checked);
+  config.arrows = settings ? Boolean(settings.arrows) : Boolean(sliderArrowsOptionInput?.checked);
+  config.centeredSlides = settings
+    ? Boolean(settings.centered)
+    : Boolean(sliderCenteredOptionInput?.checked);
+
+  config.scrollbar = navigationType === "scrollbar";
+  if (config.scrollbar) {
+    config.navigationType = "none";
+  }
+  if (config.navigationType === "thumbnails") {
+    config.scrollbar = false;
+  }
+  if (config.effect !== "slide") {
+    config.loop = false;
+    config.continuous = false;
+  }
+  if (config.continuous) {
+    config.autoplay = true;
+    config.loop = true;
+    config.arrows = false;
+    config.navigationType = "none";
+    config.scrollbar = false;
+  }
+
+  return config;
+}
+
+async function copySliderSource(type) {
+  const value = sliderState.generated[type] ?? "";
+  if (!value) {
+    return;
+  }
+
+  await copyText(value);
+  sliderStatus.textContent = `${type.toUpperCase()} 소스를 복사했습니다.`;
+}
+
+async function copyAllSliderSource() {
+  const { html, css, js } = sliderState.generated;
+  if (!html || !css || !js) {
+    return;
+  }
+
+  await copyText(`<!-- HTML -->\n${html}\n\n/* CSS */\n${css}\n\n// JS\n${js}`);
+  sliderStatus.textContent = "HTML/CSS/JS 전체 소스를 복사했습니다.";
+}
+
+async function copyText(value) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function getSliderClassName(value = null) {
+  const rawValue = value ?? sliderNameInput?.value ?? "promo-slider";
+  const className = rawValue
+    .trim()
+    .replaceAll(/[^a-zA-Z0-9_-]/g, "-")
+    .replaceAll(/-+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+
+  if (!className) {
+    return "promo-slider";
+  }
+
+  return /^[a-zA-Z_-]/.test(className) ? className : `slider-${className}`;
+}
+
+function getSliderInterval() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).interval;
+}
+
+function getContinuousSliderDuration() {
+  return Math.max(getSliderInterval() * Math.max(sliderState.images.length, 1), 4000);
+}
+
+function isContinuousSlider() {
+  const presetConfig = getSwiperPresetConfig(getSliderSwiperPreset());
+  return presetConfig.continuous && sliderState.images.length > 1;
+}
+
+function getSliderSwiperPreset(slider = null) {
+  return slider?.preset || sliderSwiperPresetInput?.value || "basic";
+}
+
+function getSliderLoop() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).loop;
+}
+
+function getSliderNavigationType() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).navigationType;
+}
+
+function getSliderTransitionType() {
+  return getSwiperPresetConfig(getSliderSwiperPreset()).effect;
+}
+
+function getSliderNavigationLabel(type) {
+  return (
+    {
+      dots: "도트",
+      counter: "숫자",
+      progress: "프로그레스",
+      thumbnails: "썸네일",
+      none: "네비게이션 없음",
+    }[type] || "도트"
+  );
+}
+
+function getSliderTransitionLabel(type) {
+  return type === "slide" ? "좌우 슬라이드" : "페이드";
+}
+
+function getSwiperPresetLabel(type) {
+  return (
+    {
+      basic: "기본",
+      pagination: "Pagination",
+      "dynamic-pagination": "Dynamic Pagination",
+      scrollbar: "Scrollbar",
+      vertical: "Vertical",
+      "free-mode": "Free Mode",
+      centered: "Centered",
+      "multi-view": "Slides Per View",
+      "auto-height": "Auto Height",
+      fade: "Fade",
+      cube: "Cube",
+      coverflow: "Coverflow",
+      flip: "Flip",
+      cards: "Cards",
+      thumbs: "Thumbs",
+    }[type] || "기본"
+  );
+}
+
+function getSliderAltText(fileName) {
+  return String(fileName || "slide").replace(/\.[^.]+$/, "");
 }
 
 function createEmptyHotspotSection(index = hotspotState.sections.length + 1) {
@@ -1123,6 +3004,31 @@ function sanitizeExportFileName(name) {
     .replaceAll(/-+/g, "-");
 
   return cleaned || "asset";
+}
+
+function buildWebpFileName(name) {
+  const baseName = String(name || "image").replace(/\.[^.]+$/, "");
+  return `${sanitizeExportFileName(baseName)}.webp`;
+}
+
+function formatBytes(bytes) {
+  const size = Number(bytes) || 0;
+  if (size < 1024) {
+    return `${size}B`;
+  }
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1).replace(/\.0$/, "")}KB`;
+  }
+  return `${(size / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")}MB`;
+}
+
+function downloadBlob(blob, fileName) {
+  const downloadUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = downloadUrl;
+  anchor.download = fileName;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
 
 function createExportImageAsset(name, dataUrl) {
@@ -1918,6 +3824,12 @@ function updateExcelDownloadAvailability() {
   }
 }
 
+function updateCsvDownloadAvailability() {
+  if (csvDownloadButton) {
+    csvDownloadButton.disabled = !csvState.csvText;
+  }
+}
+
 function applySpacingSettings() {
   state.leftMargin = Math.max(0, Number(leftMarginInput.value) || 0);
   state.topMargin = Math.max(0, Number(topMarginInput.value) || 0);
@@ -2253,6 +4165,1444 @@ function downloadExcelJson() {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
 
+async function handleCsvMergeUpload() {
+  const files = Array.from(csvMergeInput?.files ?? []);
+  if (!files.length) {
+    csvState.fileNames = [];
+    csvState.csvText = "";
+    csvState.rowCount = 0;
+    csvState.columnCount = 0;
+    csvMeta.textContent = "합쳐진 CSV 데이터 일부가 여기에 표시됩니다.";
+    csvPreview.textContent = "아직 업로드된 CSV 파일이 없습니다.";
+    csvStatus.textContent = "CSV 파일을 여러 개 업로드하면 합쳐진 데이터 미리보기가 표시됩니다.";
+    updateCsvDownloadAvailability();
+    return;
+  }
+
+  try {
+    const parsedFiles = await Promise.all(
+      files.map(async (file) => ({
+        name: file.name,
+        rows: parseCsvText(await file.text()),
+      }))
+    );
+    const useHeader = Boolean(csvHeaderInput?.checked);
+    const merged = useHeader ? mergeCsvFilesByHeader(parsedFiles) : mergeCsvFilesByRows(parsedFiles);
+
+    csvState.fileNames = files.map((file) => file.name);
+    csvState.csvText = serializeCsvRows(merged.rows);
+    csvState.rowCount = merged.dataRowCount;
+    csvState.columnCount = merged.columnCount;
+    csvMeta.textContent = `${files.length}개 파일 · ${csvState.rowCount}개 행 · ${csvState.columnCount}개 컬럼`;
+    csvPreview.textContent = csvState.csvText.slice(0, 12000);
+    csvStatus.textContent = "CSV 파일을 하나로 합쳤습니다. 다운로드할 수 있습니다.";
+  } catch (error) {
+    csvState.fileNames = [];
+    csvState.csvText = "";
+    csvState.rowCount = 0;
+    csvState.columnCount = 0;
+    csvMeta.textContent = "합쳐진 CSV 데이터 일부가 여기에 표시됩니다.";
+    csvPreview.textContent = "CSV 파일 합치기에 실패했습니다.";
+    csvStatus.textContent = "CSV 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해 주세요.";
+  } finally {
+    updateCsvDownloadAvailability();
+  }
+}
+
+function mergeCsvFilesByHeader(parsedFiles) {
+  const headers = [];
+  const records = [];
+
+  parsedFiles.forEach((file) => {
+    const rows = file.rows.filter((row) => row.some((cell) => cell !== ""));
+    if (!rows.length) {
+      return;
+    }
+
+    const fileHeaders = rows[0].map((header, index) => header || `column_${index + 1}`);
+    fileHeaders.forEach((header) => {
+      if (!headers.includes(header)) {
+        headers.push(header);
+      }
+    });
+
+    rows.slice(1).forEach((row) => {
+      const record = {};
+      fileHeaders.forEach((header, index) => {
+        record[header] = row[index] ?? "";
+      });
+      records.push(record);
+    });
+  });
+
+  const mergedRows = [headers, ...records.map((record) => headers.map((header) => record[header] ?? ""))];
+  return {
+    rows: mergedRows,
+    dataRowCount: records.length,
+    columnCount: headers.length,
+  };
+}
+
+function mergeCsvFilesByRows(parsedFiles) {
+  const rows = parsedFiles.flatMap((file) => file.rows).filter((row) => row.some((cell) => cell !== ""));
+  const columnCount = rows.reduce((max, row) => Math.max(max, row.length), 0);
+  return {
+    rows,
+    dataRowCount: rows.length,
+    columnCount,
+  };
+}
+
+function parseCsvText(text) {
+  const csvText = String(text || "").replace(/^\uFEFF/, "");
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index];
+    const nextChar = csvText[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        cell += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        index += 1;
+      }
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    cell += char;
+  }
+
+  row.push(cell);
+  if (row.length > 1 || row[0] !== "") {
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function serializeCsvRows(rows) {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const value = String(cell ?? "");
+          return /[",\n\r]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
+        })
+        .join(",")
+    )
+    .join("\n");
+}
+
+function downloadMergedCsv() {
+  if (!csvState.csvText) {
+    return;
+  }
+
+  const blob = new Blob(["\uFEFF", csvState.csvText], {
+    type: "text/csv;charset=utf-8",
+  });
+  const downloadUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = downloadUrl;
+  anchor.download = "merged-csv.csv";
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+}
+
+async function handleWebpUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  await addWebpFiles(files);
+  if (webpInput) {
+    webpInput.value = "";
+  }
+}
+
+function handleWebpDropzoneDragEnter(event) {
+  event.preventDefault();
+  webpDropzone?.classList.add("is-dragover");
+}
+
+function handleWebpDropzoneDragOver(event) {
+  event.preventDefault();
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "copy";
+  }
+  webpDropzone?.classList.add("is-dragover");
+}
+
+function handleWebpDropzoneDragLeave(event) {
+  if (!webpDropzone) {
+    return;
+  }
+  const relatedTarget = event.relatedTarget;
+  if (relatedTarget instanceof Node && webpDropzone.contains(relatedTarget)) {
+    return;
+  }
+  webpDropzone.classList.remove("is-dragover");
+}
+
+async function handleWebpDropzoneDrop(event) {
+  event.preventDefault();
+  webpDropzone?.classList.remove("is-dragover");
+  const files = Array.from(event.dataTransfer?.files ?? []);
+  await addWebpFiles(files);
+}
+
+async function addWebpFiles(files) {
+  const imageFiles = files.filter(
+    (file) =>
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      /\.(jpe?g|png)$/i.test(file.name)
+  );
+
+  if (!imageFiles.length) {
+    if (webpStatus) {
+      webpStatus.textContent = "JPG, JPEG, PNG 파일만 업로드할 수 있습니다.";
+    }
+    return;
+  }
+
+  const newItems = await Promise.all(
+    imageFiles.map(async (file) => {
+      const url = URL.createObjectURL(file);
+      const { naturalWidth, naturalHeight } = await loadImageDimensions(url);
+      return {
+        id: crypto.randomUUID(),
+        name: file.name,
+        url,
+        naturalWidth,
+        naturalHeight,
+        size: file.size,
+      };
+    })
+  );
+
+  webpState.images.push(...newItems);
+  webpState.selectedImageId = webpState.selectedImageId || newItems[0]?.id || null;
+  if (webpStatus) {
+    webpStatus.textContent = `${newItems.length}개의 이미지를 업로드했습니다.`;
+  }
+  renderWebpTool();
+}
+
+function handleWebpListClick(event) {
+  const deleteButton = event.target instanceof HTMLElement
+    ? event.target.closest("[data-delete-webp-id]")
+    : null;
+  if (deleteButton instanceof HTMLElement) {
+    deleteWebpById(deleteButton.dataset.deleteWebpId || "");
+    return;
+  }
+
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-webp-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  webpState.selectedImageId = button.dataset.webpId || webpState.selectedImageId;
+  renderWebpTool();
+}
+
+function clearWebpImages() {
+  webpState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  webpState.images = [];
+  webpState.selectedImageId = null;
+  if (webpStatus) {
+    webpStatus.textContent = "업로드한 JPG/PNG 이미지를 모두 삭제했습니다.";
+  }
+  renderWebpTool();
+}
+
+function deleteSelectedWebp() {
+  deleteWebpById(webpState.selectedImageId || "");
+}
+
+function deleteWebpById(imageId) {
+  const index = webpState.images.findIndex((image) => image.id === imageId);
+  if (index === -1) {
+    return;
+  }
+
+  const [removedImage] = webpState.images.splice(index, 1);
+  URL.revokeObjectURL(removedImage.url);
+
+  if (webpState.selectedImageId === imageId) {
+    const nextImage = webpState.images[index] || webpState.images[index - 1] || null;
+    webpState.selectedImageId = nextImage?.id ?? null;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = `${removedImage.name} 이미지를 삭제했습니다.`;
+  }
+  renderWebpTool();
+}
+
+function handleWebpQualityChange() {
+  const quality = clamp((Number(webpQualityInput?.value) || 90) / 100, 0.5, 1);
+  webpState.quality = quality;
+  syncWebpControls();
+  renderWebpPreview();
+  if (webpStatus) {
+    webpStatus.textContent = `현재 WEBP 품질을 ${Math.round(quality * 100)}로 설정했습니다.`;
+  }
+}
+
+function getSelectedWebpItem() {
+  return webpState.images.find((image) => image.id === webpState.selectedImageId) || null;
+}
+
+function syncWebpControls() {
+  const quality = Math.round(webpState.quality * 100);
+  if (webpQualityInput) {
+    webpQualityInput.value = String(quality);
+  }
+  if (webpQualityLabel) {
+    webpQualityLabel.textContent = `현재 품질: ${quality}`;
+  }
+}
+
+function updateWebpAvailability() {
+  const hasImages = webpState.images.length > 0;
+  const hasSelectedImage = Boolean(getSelectedWebpItem());
+  if (clearWebpButton) {
+    clearWebpButton.disabled = !hasImages;
+  }
+  if (deleteSelectedWebpButton) {
+    deleteSelectedWebpButton.disabled = !hasSelectedImage;
+  }
+  if (downloadSelectedWebpButton) {
+    downloadSelectedWebpButton.disabled = !hasSelectedImage;
+  }
+  if (downloadWebpZipButton) {
+    downloadWebpZipButton.disabled = !hasImages;
+  }
+}
+
+function renderWebpTool() {
+  renderWebpList();
+  syncWebpControls();
+  renderWebpPreview();
+  updateWebpAvailability();
+}
+
+function renderWebpList() {
+  if (!webpList) {
+    return;
+  }
+
+  webpList.innerHTML = webpState.images.length
+    ? webpState.images
+        .map(
+          (image) => `<div class="slider-list-item${
+            image.id === webpState.selectedImageId ? " is-active" : ""
+          }">
+            <button class="slider-list-item-main small-button" type="button" data-webp-id="${image.id}">
+              <span>${escapeHtml(image.name)}</span>
+            </button>
+            <button class="small-button" type="button" data-delete-webp-id="${image.id}">삭제</button>
+          </div>`
+        )
+        .join("")
+    : '<p class="empty-state">JPG/PNG 이미지를 업로드하면 목록이 여기에 표시됩니다.</p>';
+}
+
+function renderWebpPreview() {
+  if (!webpPreview) {
+    return;
+  }
+
+  const selectedImage = getSelectedWebpItem();
+  if (!selectedImage) {
+    webpPreview.className = "image-text-preview-empty";
+    webpPreview.textContent = "JPG/PNG 이미지를 업로드해 주세요.";
+    if (webpMeta) {
+      webpMeta.textContent = "JPG/PNG를 업로드하면 선택된 이미지 정보가 여기에 표시됩니다.";
+    }
+    return;
+  }
+
+  webpPreview.className = "image-text-preview-stage";
+  webpPreview.innerHTML = `<img class="image-text-preview-image" src="${selectedImage.url}" alt="${escapeHtml(
+    selectedImage.name
+  )}" />`;
+
+  if (webpMeta) {
+    webpMeta.textContent =
+      `${selectedImage.name} · ${selectedImage.naturalWidth} x ${selectedImage.naturalHeight}px · ` +
+      `${formatBytes(selectedImage.size)} · WEBP 품질 ${Math.round(webpState.quality * 100)}`;
+  }
+}
+
+async function downloadSelectedWebp() {
+  const image = getSelectedWebpItem();
+  if (!image) {
+    return;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = `${image.name} WEBP를 생성하는 중입니다...`;
+  }
+
+  try {
+    const blob = await convertImageToWebpBlob(image);
+    downloadBlob(blob, buildWebpFileName(image.name));
+    if (webpStatus) {
+      webpStatus.textContent = `${image.name} WEBP 다운로드를 시작했습니다.`;
+    }
+  } catch (error) {
+    console.error("downloadSelectedWebp error", error);
+    if (webpStatus) {
+      webpStatus.textContent = "WEBP 변환 중 오류가 발생했습니다. 브라우저 지원 여부를 확인해 주세요.";
+    }
+  }
+}
+
+async function downloadWebpZip() {
+  if (!webpState.images.length) {
+    return;
+  }
+
+  if (!window.JSZip) {
+    if (webpStatus) {
+      webpStatus.textContent = "ZIP 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.";
+    }
+    return;
+  }
+
+  if (webpStatus) {
+    webpStatus.textContent = "WEBP ZIP 파일을 준비하는 중입니다...";
+  }
+
+  try {
+    const zip = new window.JSZip();
+
+    for (const image of webpState.images) {
+      if (webpStatus) {
+        webpStatus.textContent = `${image.name} WEBP를 생성하는 중입니다...`;
+      }
+      const blob = await convertImageToWebpBlob(image);
+      zip.file(buildWebpFileName(image.name), blob);
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    downloadBlob(zipBlob, "jpg-to-webp.zip");
+    if (webpStatus) {
+      webpStatus.textContent = `${webpState.images.length}개의 WEBP 파일을 ZIP으로 다운로드했습니다.`;
+    }
+  } catch (error) {
+    console.error("downloadWebpZip error", error);
+    if (webpStatus) {
+      webpStatus.textContent = "WEBP ZIP 생성 중 오류가 발생했습니다. 다시 시도해 주세요.";
+    }
+  }
+}
+
+async function convertImageToWebpBlob(image) {
+  const source = await loadImageElement(image.url);
+  const canvas = document.createElement("canvas");
+  canvas.width = source.naturalWidth;
+  canvas.height = source.naturalHeight;
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Canvas unavailable");
+  }
+
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(source, 0, 0);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("WEBP conversion failed"));
+        }
+      },
+      "image/webp",
+      webpState.quality
+    );
+  });
+}
+
+function handleImageTextUpload(event) {
+  const files = Array.from(event.target.files ?? []);
+  addImageTextFiles(files);
+  event.target.value = "";
+}
+
+function addImageTextFiles(files) {
+  if (!files.length) {
+    return;
+  }
+
+  const jpgFiles = files.filter((file) => /image\/jpeg|image\/jpg/i.test(file.type) || /\.jpe?g$/i.test(file.name));
+  if (!jpgFiles.length) {
+    imageTextStatus.textContent = "JPG 파일만 업로드할 수 있습니다.";
+    return;
+  }
+
+  jpgFiles.forEach((file) => {
+    const url = URL.createObjectURL(file);
+    imageTextState.images.push({
+      id: crypto.randomUUID(),
+      name: file.name,
+      url,
+      detectedBox: null,
+      detectedText: "",
+    });
+  });
+
+  if (!imageTextState.selectedImageId && imageTextState.images.length) {
+    imageTextState.selectedImageId = imageTextState.images[0].id;
+  }
+
+  imageTextStatus.textContent = `${jpgFiles.length}개 JPG를 추가했습니다. 위치와 문구를 맞춘 뒤 ZIP으로 저장할 수 있습니다.`;
+  renderImageTextTool();
+}
+
+function handleImageTextDropzoneDragEnter(event) {
+  event.preventDefault();
+  imageTextDropzone?.classList.add("is-dragover");
+}
+
+function handleImageTextDropzoneDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "copy";
+  imageTextDropzone?.classList.add("is-dragover");
+}
+
+function handleImageTextDropzoneDragLeave(event) {
+  if (!imageTextDropzone) {
+    return;
+  }
+  const relatedTarget = event.relatedTarget;
+  if (relatedTarget instanceof Node && imageTextDropzone.contains(relatedTarget)) {
+    return;
+  }
+  imageTextDropzone.classList.remove("is-dragover");
+}
+
+function handleImageTextDropzoneDrop(event) {
+  event.preventDefault();
+  imageTextDropzone?.classList.remove("is-dragover");
+  const files = Array.from(event.dataTransfer?.files ?? []);
+  addImageTextFiles(files);
+}
+
+function clearImageTextImages() {
+  imageTextState.images.forEach((image) => URL.revokeObjectURL(image.url));
+  imageTextState.images = [];
+  imageTextState.selectedImageId = null;
+  imageTextStatus.textContent = "업로드한 JPG 이미지를 모두 삭제했습니다.";
+  renderImageTextTool();
+}
+
+function handleImageTextListClick(event) {
+  const deleteButton = event.target instanceof HTMLElement
+    ? event.target.closest("[data-delete-image-text-id]")
+    : null;
+  if (deleteButton instanceof HTMLElement) {
+    deleteImageTextById(deleteButton.dataset.deleteImageTextId || "");
+    return;
+  }
+
+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-image-text-id]") : null;
+  if (!(button instanceof HTMLElement)) {
+    return;
+  }
+
+  imageTextState.selectedImageId = button.dataset.imageTextId || imageTextState.selectedImageId;
+  renderImageTextTool();
+}
+
+function deleteSelectedImageText() {
+  deleteImageTextById(imageTextState.selectedImageId || "");
+}
+
+function deleteImageTextById(imageId) {
+  const index = imageTextState.images.findIndex((image) => image.id === imageId);
+  if (index === -1) {
+    return;
+  }
+
+  const [removedImage] = imageTextState.images.splice(index, 1);
+  URL.revokeObjectURL(removedImage.url);
+
+  if (imageTextState.selectedImageId === imageId) {
+    const nextImage = imageTextState.images[index] || imageTextState.images[index - 1] || null;
+    imageTextState.selectedImageId = nextImage?.id ?? null;
+  }
+
+  imageTextStatus.textContent = `${removedImage.name} 이미지를 삭제했습니다.`;
+  renderImageTextTool();
+}
+
+function handleImageTextSettingsChange(event) {
+  const selectedImage = getSelectedImageTextItem();
+  imageTextState.settings.originalText = imageTextOriginalInput?.value || "";
+  imageTextState.settings.replacementText = imageTextReplacementInput?.value || "";
+  imageTextState.settings.deleteText = imageTextDeleteInput?.value || "";
+  imageTextState.settings.autoDetect = Boolean(imageTextAutoDetectInput?.checked);
+  imageTextState.settings.reflowAfterDelete = Boolean(imageTextReflowInput?.checked);
+  imageTextState.settings.boxX = Math.max(0, Number(imageTextBoxXInput?.value) || 0);
+  imageTextState.settings.boxY = Math.max(0, Number(imageTextBoxYInput?.value) || 0);
+  imageTextState.settings.boxWidth = Math.max(1, Number(imageTextBoxWidthInput?.value) || 1);
+  imageTextState.settings.boxHeight = Math.max(1, Number(imageTextBoxHeightInput?.value) || 1);
+  imageTextState.settings.fontSize = Math.max(8, Number(imageTextFontSizeInput?.value) || 8);
+  imageTextState.settings.fontWeight = imageTextFontWeightInput?.value || "700";
+  imageTextState.settings.paddingX = Math.max(0, Number(imageTextPaddingXInput?.value) || 0);
+  imageTextState.settings.letterSpacing = Number(imageTextLetterSpacingInput?.value || 0);
+  imageTextState.settings.align = imageTextAlignInput?.value || "left";
+  imageTextState.settings.textColor = imageTextColorInput?.value || "#111111";
+  imageTextState.settings.backgroundColor = imageTextBackgroundInput?.value || "#ffffff";
+  const targetId = event?.target instanceof HTMLElement ? event.target.id : "";
+  if (
+    selectedImage &&
+    !imageTextState.isFinding &&
+    [
+      "imageTextOriginalInput",
+      "imageTextBoxXInput",
+      "imageTextBoxYInput",
+      "imageTextBoxWidthInput",
+      "imageTextBoxHeightInput",
+    ].includes(targetId)
+  ) {
+    selectedImage.detectedBox = null;
+  }
+  updateImageTextAvailability();
+  renderImageTextPreview();
+}
+
+function syncImageTextControls() {
+  const settings = imageTextState.settings;
+  if (imageTextOriginalInput) {
+    imageTextOriginalInput.value = settings.originalText;
+  }
+  if (imageTextReplacementInput) {
+    imageTextReplacementInput.value = settings.replacementText;
+  }
+  if (imageTextDeleteInput) {
+    imageTextDeleteInput.value = settings.deleteText;
+  }
+  if (imageTextAutoDetectInput) {
+    imageTextAutoDetectInput.checked = settings.autoDetect;
+  }
+  if (imageTextReflowInput) {
+    imageTextReflowInput.checked = settings.reflowAfterDelete;
+  }
+  if (imageTextBoxXInput) {
+    imageTextBoxXInput.value = String(Math.round(settings.boxX));
+  }
+  if (imageTextBoxYInput) {
+    imageTextBoxYInput.value = String(Math.round(settings.boxY));
+  }
+  if (imageTextBoxWidthInput) {
+    imageTextBoxWidthInput.value = String(Math.round(settings.boxWidth));
+  }
+  if (imageTextBoxHeightInput) {
+    imageTextBoxHeightInput.value = String(Math.round(settings.boxHeight));
+  }
+  if (imageTextFontSizeInput) {
+    imageTextFontSizeInput.value = String(Math.round(settings.fontSize));
+  }
+  if (imageTextFontWeightInput) {
+    imageTextFontWeightInput.value = settings.fontWeight;
+  }
+  if (imageTextPaddingXInput) {
+    imageTextPaddingXInput.value = String(Math.round(settings.paddingX));
+  }
+  if (imageTextLetterSpacingInput) {
+    imageTextLetterSpacingInput.value = String(settings.letterSpacing);
+  }
+  if (imageTextAlignInput) {
+    imageTextAlignInput.value = settings.align;
+  }
+  if (imageTextColorInput) {
+    imageTextColorInput.value = settings.textColor;
+  }
+  if (imageTextBackgroundInput) {
+    imageTextBackgroundInput.value = settings.backgroundColor;
+  }
+}
+
+function getSelectedImageTextItem() {
+  return imageTextState.images.find((image) => image.id === imageTextState.selectedImageId) || null;
+}
+
+function renderImageTextTool() {
+  renderImageTextList();
+  syncImageTextControls();
+  renderImageTextPreview();
+  updateImageTextAvailability();
+}
+
+function renderImageTextList() {
+  if (!imageTextList) {
+    return;
+  }
+
+  imageTextList.innerHTML = imageTextState.images.length
+    ? imageTextState.images
+        .map(
+          (image) => `<div class="slider-list-item${
+            image.id === imageTextState.selectedImageId ? " is-active" : ""
+          }">
+            <button class="slider-list-item-main small-button" type="button" data-image-text-id="${image.id}">
+              <span>${escapeHtml(image.name)}</span>
+            </button>
+            <button class="small-button" type="button" data-delete-image-text-id="${image.id}">삭제</button>
+          </div>`
+        )
+        .join("")
+    : '<p class="empty-state">JPG 이미지를 업로드하면 목록이 여기에 표시됩니다.</p>';
+}
+
+function renderImageTextPreview() {
+  if (!imageTextPreview) {
+    return;
+  }
+
+  const selectedImage = getSelectedImageTextItem();
+  if (!selectedImage) {
+    imageTextPreview.className = "image-text-preview-empty";
+    imageTextPreview.textContent = "JPG 이미지를 업로드해 주세요.";
+    imageTextMeta.textContent = "JPG를 업로드하면 현재 선택된 이미지 위에 교체 박스가 표시됩니다.";
+    imageTextState.previewScale = 1;
+    return;
+  }
+
+  const { settings } = imageTextState;
+  const resolvedSettings = getImageTextSettingsForImage(selectedImage);
+  const previewText = resolvedSettings.renderText || "";
+  const shouldShowPlaceholder =
+    !previewText &&
+    !String(settings.replacementText || "").trim() &&
+    !String(settings.deleteText || "").trim();
+  imageTextPreview.className = "image-text-preview-stage";
+  imageTextPreview.innerHTML = `
+    <img id="imageTextPreviewImage" class="image-text-preview-image" src="${selectedImage.url}" alt="${escapeHtml(
+      selectedImage.name
+    )}" />
+    <div
+      id="imageTextOverlayBox"
+      class="image-text-overlay-box"
+      style="
+        left: ${settings.boxX * imageTextState.previewScale}px;
+        top: ${settings.boxY * imageTextState.previewScale}px;
+        width: ${settings.boxWidth * imageTextState.previewScale}px;
+        height: ${settings.boxHeight * imageTextState.previewScale}px;
+        background: ${hexToRgba(settings.backgroundColor, 0.78)};
+      "
+    >
+      <div
+        class="image-text-overlay-content"
+        style="
+          justify-content: ${getImageTextJustifyContent(settings.align)};
+          padding: 0 ${settings.paddingX * imageTextState.previewScale}px;
+          color: ${settings.textColor};
+          font-size: ${settings.fontSize * imageTextState.previewScale}px;
+          font-weight: ${settings.fontWeight};
+          letter-spacing: ${resolvedSettings.effectiveLetterSpacing * imageTextState.previewScale}px;
+          text-align: ${settings.align};
+        "
+      >${escapeHtml(shouldShowPlaceholder ? "새 문구" : previewText)}</div>
+    </div>`;
+
+  const previewImage = imageTextPreview.querySelector("#imageTextPreviewImage");
+  if (previewImage instanceof HTMLImageElement) {
+    const updateScale = () => {
+      const renderedWidth = previewImage.clientWidth || previewImage.naturalWidth || 1;
+      const naturalWidth = previewImage.naturalWidth || renderedWidth || 1;
+      const nextScale = renderedWidth / naturalWidth;
+      if (Math.abs(nextScale - imageTextState.previewScale) > 0.001) {
+        imageTextState.previewScale = nextScale;
+        renderImageTextPreview();
+      }
+    };
+
+    if (previewImage.complete) {
+      const renderedWidth = previewImage.clientWidth || previewImage.naturalWidth || 1;
+      const naturalWidth = previewImage.naturalWidth || renderedWidth || 1;
+      const nextScale = renderedWidth / naturalWidth;
+      if (Math.abs(nextScale - imageTextState.previewScale) > 0.001) {
+        imageTextState.previewScale = nextScale;
+        requestAnimationFrame(() => renderImageTextPreview());
+        return;
+      }
+    } else {
+      previewImage.addEventListener("load", updateScale, { once: true });
+    }
+
+    imageTextMeta.textContent = `${selectedImage.name} · ${
+      previewImage.naturalWidth || "-"
+    } x ${previewImage.naturalHeight || "-"}px`;
+  }
+}
+
+function updateImageTextAvailability() {
+  const hasImages = imageTextState.images.length > 0;
+  const hasSelectedImage = Boolean(getSelectedImageTextItem());
+  if (clearImageTextButton) {
+    clearImageTextButton.disabled = !hasImages;
+  }
+  if (deleteSelectedImageTextButton) {
+    deleteSelectedImageTextButton.disabled = !hasSelectedImage;
+  }
+  if (downloadImageTextZipButton) {
+    downloadImageTextZipButton.disabled = !hasImages;
+  }
+  if (findImageTextButton) {
+    findImageTextButton.disabled = !hasImages || imageTextState.isFinding;
+  }
+}
+
+function handleImageTextPreviewPointerDown(event) {
+  const target = event.target instanceof HTMLElement ? event.target.closest("#imageTextOverlayBox") : null;
+  const selectedImage = getSelectedImageTextItem();
+  if (!(target instanceof HTMLElement) || !selectedImage) {
+    return;
+  }
+
+  imageTextDragState = {
+    startX: event.clientX,
+    startY: event.clientY,
+    boxX: imageTextState.settings.boxX,
+    boxY: imageTextState.settings.boxY,
+  };
+
+  target.setPointerCapture?.(event.pointerId);
+}
+
+function handleImageTextPreviewPointerMove(event) {
+  if (!imageTextDragState || !imageTextState.previewScale) {
+    return;
+  }
+
+  const dx = (event.clientX - imageTextDragState.startX) / imageTextState.previewScale;
+  const dy = (event.clientY - imageTextDragState.startY) / imageTextState.previewScale;
+  imageTextState.settings.boxX = Math.max(0, Math.round(imageTextDragState.boxX + dx));
+  imageTextState.settings.boxY = Math.max(0, Math.round(imageTextDragState.boxY + dy));
+  const selectedImage = getSelectedImageTextItem();
+  if (selectedImage) {
+    selectedImage.detectedBox = null;
+  }
+  syncImageTextControls();
+  renderImageTextPreview();
+}
+
+function stopImageTextDrag() {
+  imageTextDragState = null;
+}
+
+async function detectImageTextForSelection(showStatus = false) {
+  const selectedImage = getSelectedImageTextItem();
+  if (!selectedImage) {
+    if (showStatus && imageTextStatus) {
+      imageTextStatus.textContent = "먼저 JPG 이미지를 업로드해 주세요.";
+    }
+    return;
+  }
+
+  const targetText = normalizeDetectedText(imageTextState.settings.originalText);
+  if (!targetText) {
+    if (showStatus && imageTextStatus) {
+      imageTextStatus.textContent = "찾을 문구를 먼저 입력해 주세요.";
+    }
+    return;
+  }
+
+  imageTextState.isFinding = true;
+  updateImageTextAvailability();
+
+  if (showStatus) {
+    imageTextStatus.textContent = "현재 이미지에서 문구를 찾는 중입니다...";
+  }
+
+  try {
+    const detectedResult = await detectTextBoxForImage(selectedImage);
+    if (!detectedResult) {
+      if (showStatus) {
+        imageTextStatus.textContent =
+          "일치하는 문구를 찾지 못했습니다. 찾을 문구를 더 정확히 입력하거나 수동 박스를 사용해 주세요.";
+      }
+      return;
+    }
+
+    selectedImage.detectedBox = detectedResult.bbox;
+    selectedImage.detectedText = detectedResult.text || "";
+    applyDetectedTextBox(detectedResult.bbox);
+    if (showStatus) {
+      imageTextStatus.textContent = "문구 위치를 찾았습니다. 필요하면 박스를 조금만 보정해 주세요.";
+    }
+  } catch (error) {
+    console.error("detectImageTextForSelection error", error);
+    if (showStatus) {
+      imageTextStatus.textContent = formatImageTextErrorMessage(error);
+    }
+  } finally {
+    imageTextState.isFinding = false;
+    updateImageTextAvailability();
+  }
+}
+
+async function downloadImageTextZip() {
+  if (!imageTextState.images.length) {
+    return;
+  }
+
+  if (!window.JSZip) {
+    imageTextStatus.textContent = "ZIP 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.";
+    return;
+  }
+
+  imageTextStatus.textContent = "JPG를 생성하는 중입니다...";
+  const zip = new window.JSZip();
+
+  try {
+    for (const image of imageTextState.images) {
+      if (imageTextState.settings.autoDetect && imageTextState.settings.originalText.trim()) {
+        imageTextStatus.textContent = `${image.name} 문구를 찾는 중입니다...`;
+        const detectedResult = await detectTextBoxForImage(image);
+        if (detectedResult) {
+          image.detectedBox = detectedResult.bbox;
+          image.detectedText = detectedResult.text || "";
+        }
+      }
+
+      imageTextStatus.textContent = `${image.name} JPG를 생성하는 중입니다...`;
+      const blob = await renderImageTextBlob(image);
+      zip.file(sanitizeExportFileName(image.name), blob);
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const downloadUrl = URL.createObjectURL(zipBlob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = "image-text-modify.zip";
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    imageTextStatus.textContent = `${imageTextState.images.length}개 JPG를 ZIP으로 다운로드했습니다.`;
+  } catch (error) {
+    console.error("downloadImageTextZip error", error);
+    imageTextStatus.textContent = formatImageTextErrorMessage(error, "JPG 생성 중 오류");
+  }
+}
+
+async function renderImageTextBlob(image) {
+  const source = await loadImageElement(image.url);
+  const canvas = document.createElement("canvas");
+  canvas.width = source.naturalWidth;
+  canvas.height = source.naturalHeight;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas unavailable");
+  }
+
+  context.drawImage(source, 0, 0);
+  drawImageTextOverlay(
+    context,
+    getImageTextSettingsForImage(image),
+    canvas.width,
+    canvas.height
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Blob unavailable"));
+        }
+      },
+      "image/jpeg",
+      0.95
+    );
+  });
+}
+
+function drawImageTextOverlay(context, settings, imageWidth, imageHeight) {
+  const boxX = clamp(settings.boxX, 0, imageWidth);
+  const boxY = clamp(settings.boxY, 0, imageHeight);
+  const boxWidth = clamp(settings.boxWidth, 1, imageWidth - boxX);
+  const boxHeight = clamp(settings.boxHeight, 1, imageHeight - boxY);
+  const fontSize = Math.max(8, settings.fontSize);
+  const paddingX = Math.max(0, settings.paddingX);
+  const text = settings.renderText || settings.replacementText || "";
+
+  context.fillStyle = settings.backgroundColor;
+  context.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+  context.fillStyle = settings.textColor;
+  context.font = `${settings.fontWeight} ${fontSize}px Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif`;
+  context.textBaseline = "middle";
+
+  if (settings.align === "center") {
+    context.textAlign = "center";
+  } else if (settings.align === "right") {
+    context.textAlign = "right";
+  } else {
+    context.textAlign = "left";
+  }
+
+  const textX =
+    settings.align === "center"
+      ? boxX + boxWidth / 2
+      : settings.align === "right"
+        ? boxX + boxWidth - paddingX
+        : boxX + paddingX;
+  const textY = boxY + boxHeight / 2;
+  wrapCanvasText(
+    context,
+    text,
+    textX,
+    textY,
+    Math.max(boxWidth - paddingX * 2, 1),
+    fontSize * 1.25,
+    settings.effectiveLetterSpacing ?? settings.letterSpacing ?? 0
+  );
+}
+
+function getImageTextSettingsForImage(image) {
+  const detectedBox = image?.detectedBox;
+  const baseSettings = {
+    ...imageTextState.settings,
+    renderText: getImageTextRenderText(image, imageTextState.settings),
+    effectiveLetterSpacing: getImageTextEffectiveLetterSpacing(image, imageTextState.settings),
+  };
+  if (!detectedBox) {
+    return baseSettings;
+  }
+
+  return {
+    ...baseSettings,
+    boxX: detectedBox.x,
+    boxY: detectedBox.y,
+    boxWidth: detectedBox.width,
+    boxHeight: detectedBox.height,
+  };
+}
+
+function applyDetectedTextBox(detectedBox) {
+  imageTextState.settings.boxX = Math.round(detectedBox.x);
+  imageTextState.settings.boxY = Math.round(detectedBox.y);
+  imageTextState.settings.boxWidth = Math.round(detectedBox.width);
+  imageTextState.settings.boxHeight = Math.round(detectedBox.height);
+  syncImageTextControls();
+  renderImageTextPreview();
+}
+
+async function detectTextBoxForImage(image) {
+  const targetText = normalizeDetectedText(imageTextState.settings.originalText);
+  if (!targetText) {
+    return null;
+  }
+
+  const textCandidates = await recognizeImageTextCandidates(image.url);
+  if (!textCandidates.length) {
+    return null;
+  }
+
+  let bestMatch = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  textCandidates.forEach((candidate) => {
+    const normalized = normalizeDetectedText(candidate.text);
+    if (!normalized) {
+      return;
+    }
+
+    const score = getTextMatchScore(targetText, normalized);
+    if (score < bestScore) {
+      bestScore = score;
+      bestMatch = candidate;
+    }
+  });
+
+  if (!bestMatch) {
+    return null;
+  }
+
+  const threshold = Math.max(2, Math.floor(targetText.length * 0.45));
+  const shouldUseLineBox =
+    imageTextState.settings.reflowAfterDelete && String(imageTextState.settings.deleteText || "").trim();
+  return bestScore <= threshold
+    ? {
+        bbox: shouldUseLineBox && bestMatch.lineBbox ? bestMatch.lineBbox : bestMatch.bbox,
+        text: shouldUseLineBox && bestMatch.lineText ? bestMatch.lineText : bestMatch.text,
+      }
+    : null;
+}
+
+async function recognizeImageTextCandidates(imageUrl) {
+  await ensureTesseractReady();
+  const result = await window.Tesseract.recognize(imageUrl, "eng+kor", {
+    logger: (message) => {
+      if (!imageTextStatus || !imageTextState.isFinding) {
+        return;
+      }
+      if (message.status === "recognizing text" && typeof message.progress === "number") {
+        imageTextStatus.textContent = `문구를 찾는 중입니다... ${Math.round(message.progress * 100)}%`;
+      }
+    },
+  });
+
+  const candidates = [];
+  const lines = result.data?.lines || [];
+
+  lines.forEach((line) => {
+    const lineBbox = createBboxFromPoints(line.bbox);
+    const lineText = line.text || "";
+    const words = (line.words || []).filter((word) => String(word.text || "").trim());
+    if (!words.length) {
+      if (String(lineText).trim()) {
+        candidates.push({
+          text: lineText,
+          bbox: lineBbox,
+          lineText,
+          lineBbox,
+        });
+      }
+      return;
+    }
+
+    words.forEach((word) => {
+      candidates.push({
+        text: word.text || "",
+        bbox: createBboxFromPoints(word.bbox),
+        lineText,
+        lineBbox,
+      });
+    });
+
+    const maxWindowSize = Math.min(words.length, 6);
+    for (let size = 2; size <= maxWindowSize; size += 1) {
+      for (let start = 0; start <= words.length - size; start += 1) {
+        const group = words.slice(start, start + size);
+        candidates.push({
+          text: group.map((word) => word.text || "").join(" "),
+          bbox: mergeBboxes(group.map((word) => createBboxFromPoints(word.bbox))),
+          lineText,
+          lineBbox,
+        });
+      }
+    }
+  });
+
+  return candidates.filter((candidate) => candidate.text.trim());
+}
+
+async function ensureTesseractReady() {
+  if (window.Tesseract) {
+    imageTextState.ocrReady = true;
+    return;
+  }
+
+  throw new Error("Tesseract unavailable");
+}
+
+function formatImageTextErrorMessage(error, prefix = "문구 자동 탐색 오류") {
+  const message = String(error?.message || error || "").trim();
+
+  if (!message) {
+    return `${prefix}: 알 수 없는 오류가 발생했습니다.`;
+  }
+
+  if (/tesseract unavailable/i.test(message)) {
+    return `${prefix}: OCR 라이브러리를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.`;
+  }
+
+  if (/failed to fetch|networkerror|load failed/i.test(message)) {
+    return `${prefix}: 네트워크 요청이 실패했습니다. 인터넷 연결 또는 브라우저 차단 설정을 확인해 주세요.`;
+  }
+
+  if (/language|traineddata|worker/i.test(message)) {
+    return `${prefix}: OCR 언어 데이터 로드에 실패했습니다. 네트워크 상태를 확인해 주세요.`;
+  }
+
+  return `${prefix}: ${message}`;
+}
+
+function normalizeDetectedText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+function createBboxFromPoints(bbox) {
+  const x0 = bbox?.x0 ?? 0;
+  const y0 = bbox?.y0 ?? 0;
+  const x1 = bbox?.x1 ?? x0;
+  const y1 = bbox?.y1 ?? y0;
+  return {
+    x: x0,
+    y: y0,
+    width: Math.max(x1 - x0, 1),
+    height: Math.max(y1 - y0, 1),
+  };
+}
+
+function mergeBboxes(boxes) {
+  const validBoxes = boxes.filter(Boolean);
+  if (!validBoxes.length) {
+    return { x: 0, y: 0, width: 1, height: 1 };
+  }
+
+  const minX = Math.min(...validBoxes.map((box) => box.x));
+  const minY = Math.min(...validBoxes.map((box) => box.y));
+  const maxX = Math.max(...validBoxes.map((box) => box.x + box.width));
+  const maxY = Math.max(...validBoxes.map((box) => box.y + box.height));
+
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(maxX - minX, 1),
+    height: Math.max(maxY - minY, 1),
+  };
+}
+
+function getImageTextRenderText(image, settings) {
+  const manualReplacement = String(settings.replacementText || "");
+  if (manualReplacement.trim()) {
+    return manualReplacement;
+  }
+
+  if (!settings.reflowAfterDelete) {
+    return manualReplacement;
+  }
+
+  const detectedText = String(image?.detectedText || "").trim();
+  const deleteText = String(settings.deleteText || "").trim();
+  if (!detectedText || !deleteText) {
+    return detectedText;
+  }
+
+  return removeMatchedText(detectedText, deleteText);
+}
+
+function getImageTextEffectiveLetterSpacing(image, settings) {
+  const baseSpacing = Number(settings.letterSpacing || 0);
+  const manualReplacement = String(settings.replacementText || "").trim();
+  if (manualReplacement) {
+    return baseSpacing;
+  }
+
+  if (!settings.reflowAfterDelete) {
+    return baseSpacing;
+  }
+
+  const originalText = String(image?.detectedText || "").trim();
+  const renderText = getImageTextRenderText(image, settings);
+  const deleteText = String(settings.deleteText || "").trim();
+  const renderChars = Array.from(String(renderText || ""));
+
+  if (!originalText || !deleteText || renderChars.length <= 1) {
+    return baseSpacing;
+  }
+
+  const measureContext = document.createElement("canvas").getContext("2d");
+  if (!measureContext) {
+    return baseSpacing;
+  }
+
+  measureContext.font = `${settings.fontWeight} ${Math.max(
+    8,
+    settings.fontSize
+  )}px Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif`;
+
+  const originalWidth = measureCanvasTextWidth(measureContext, originalText, baseSpacing);
+  const currentWidth = measureCanvasTextWidth(measureContext, renderText, baseSpacing);
+  const widthGap = Math.max(originalWidth - currentWidth, 0);
+  if (widthGap <= 0) {
+    return baseSpacing;
+  }
+
+  const tighterSpacing = baseSpacing - widthGap / Math.max(renderChars.length - 1, 1);
+  return Math.max(tighterSpacing, -Math.max(settings.fontSize * 0.08, 6));
+}
+
+function removeMatchedText(sourceText, deleteText) {
+  if (!deleteText.trim()) {
+    return sourceText;
+  }
+
+  const escapedDelete = deleteText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const removed = sourceText.replace(new RegExp(escapedDelete, "ig"), " ");
+  return removed.replace(/\s+/g, " ").trim();
+}
+
+function getTextMatchScore(target, candidate) {
+  if (target === candidate) {
+    return 0;
+  }
+  if (candidate.includes(target) || target.includes(candidate)) {
+    return Math.abs(target.length - candidate.length);
+  }
+  return levenshteinDistance(target, candidate);
+}
+
+function levenshteinDistance(source, target) {
+  const rows = source.length + 1;
+  const cols = target.length + 1;
+  const matrix = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    matrix[row][0] = row;
+  }
+  for (let col = 0; col < cols; col += 1) {
+    matrix[0][col] = col;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      const cost = source[row - 1] === target[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost
+      );
+    }
+  }
+
+  return matrix[rows - 1][cols - 1];
+}
+
+function wrapCanvasText(context, text, x, centerY, maxWidth, lineHeight, letterSpacing = 0) {
+  const lines = String(text || "")
+    .split("\n")
+    .flatMap((part) => splitCanvasTextLine(context, part, maxWidth, letterSpacing));
+  const totalHeight = lineHeight * Math.max(lines.length, 1);
+  let startY = centerY - totalHeight / 2 + lineHeight / 2;
+
+  if (!lines.length) {
+    context.fillText("", x, centerY);
+    return;
+  }
+
+  lines.forEach((line) => {
+    drawCanvasTextLine(context, line, x, startY, letterSpacing);
+    startY += lineHeight;
+  });
+}
+
+function splitCanvasTextLine(context, text, maxWidth, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  const lines = [];
+  let current = "";
+
+  characters.forEach((character) => {
+    const candidate = current + character;
+    if (current && measureCanvasTextWidth(context, candidate, letterSpacing) > maxWidth) {
+      lines.push(current);
+      current = character;
+    } else {
+      current = candidate;
+    }
+  });
+
+  if (current || !lines.length) {
+    lines.push(current);
+  }
+
+  return lines;
+}
+
+function measureCanvasTextWidth(context, text, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  if (!characters.length) {
+    return 0;
+  }
+
+  const glyphWidth = characters.reduce((total, character) => total + context.measureText(character).width, 0);
+  return glyphWidth + Math.max(characters.length - 1, 0) * letterSpacing;
+}
+
+function drawCanvasTextLine(context, text, x, y, letterSpacing = 0) {
+  const characters = Array.from(String(text || ""));
+  if (!characters.length || letterSpacing === 0) {
+    context.fillText(text, x, y);
+    return;
+  }
+
+  const originalTextAlign = context.textAlign;
+  const totalWidth = measureCanvasTextWidth(context, text, letterSpacing);
+  let cursorX = x;
+  if (originalTextAlign === "center") {
+    cursorX = x - totalWidth / 2;
+  } else if (originalTextAlign === "right") {
+    cursorX = x - totalWidth;
+  }
+
+  characters.forEach((character, index) => {
+    context.textAlign = "left";
+    context.fillText(character, cursorX, y);
+    cursorX += context.measureText(character).width;
+    if (index < characters.length - 1) {
+      cursorX += letterSpacing;
+    }
+  });
+  context.textAlign = originalTextAlign;
+}
+
+function getImageTextJustifyContent(align) {
+  if (align === "center") {
+    return "center";
+  }
+  if (align === "right") {
+    return "flex-end";
+  }
+  return "flex-start";
+}
+
+function hexToRgba(hex, alpha = 1) {
+  const value = hex.replace("#", "");
+  const normalized = value.length === 3 ? value.split("").map((char) => char + char).join("") : value;
+  const red = Number.parseInt(normalized.slice(0, 2), 16);
+  const green = Number.parseInt(normalized.slice(2, 4), 16);
+  const blue = Number.parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function loadImageElement(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
 function getSafeExportSettings(requestedScale) {
   const safeRequestedScale =
     Number.isFinite(requestedScale) && requestedScale > 0 ? requestedScale : 1;
@@ -2280,8 +5630,4 @@ function getSafeExportSettings(requestedScale) {
     outputHeight: Math.round(state.videoHeight * outputScale),
     capped: outputScale < safeRequestedScale,
   };
-}
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
 }
